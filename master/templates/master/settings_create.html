@@ -1,0 +1,168 @@
+{% extends 'home/base.html' %}
+
+
+{% load static %}
+{% block content %}
+{% include 'master/settings_radio_options.html' %}
+
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+<script src="{%static 'js/customScript/customScript.js' %}"></script>
+<script>
+
+   $(document).ready(function(){
+        $('#province, #district').select2({'width': '100%'});
+        $("#provinceRadio").attr('checked', true);
+
+        loadSelectElementData("province","{% url 'general-settings-lists' %}", "setupType", "province" )
+        loadSelectElementData("district","{% url 'general-settings-lists' %}", "setupType", "district" )
+
+   });
+
+   $('input[name="radioButton"]').on("change", function(){
+      document.getElementById('districtDiv').style.display = 'none';
+      document.getElementById('provinceDiv').style.display = 'none';
+      var id = $(this).attr('id');
+      console.log(id)
+      var targetId = '';
+
+      switch (id) {
+         case 'vdcMunicipalityRadio':
+            targetId = 'districtDiv';
+            break;
+         case 'districtRadio':
+            targetId = 'provinceDiv'
+      
+         default:
+            break;
+      }
+
+      document.getElementById(targetId).style.display = 'block';
+   });
+
+
+   $('#btnSaveGeneralSetting').on('click', function(){
+         var selectedSetting = $("input[name='radioButton']:checked").attr('id');
+         var jsonData = convertToJsonForGeneralSetting(selectedSetting);
+
+         openConfirmSaveModal(jsonData, 'settingsCreateForm', saveUpdateGeneralSettingsData, '{% url  "general-settings-create" %}' )
+
+   })
+
+
+   function openConfirmSaveModal(inputJson, formId, callBackFunction, requestUrl){
+         $('#saveUpdateConfirmModal').modal('show');
+
+          $('#btnSaveModal').data("inputJson", inputJson).data("formId", formId).data("callBackFunction", callBackFunction).data("requestUrl", requestUrl);
+
+   }
+
+   $(document).on("click", "#btnSaveModal", function(){
+         var inputJson = $(this).data("inputJson");
+         var formId = $(this).data("formId");
+         var callBackFunction = $(this).data("callBackFunction");
+         var requestUrl = $(this).data("requestUrl");
+
+         var csrftoken = $('#'+formId).find("input[name='csrfmiddlewaretoken']").val();
+
+         if(callBackFunction){
+            callBackFunction(inputJson, formId, requestUrl)
+         }
+   })
+
+
+   function saveUpdateGeneralSettingsData(inputJson, formId, requestUrl){
+       $.ajax({
+         "url": requestUrl, 
+         "headers": {
+            'X-CSRFToken': $('#'+formId).find("input[name='csrfmiddlewaretoken']").val()
+         },
+         "method": "POST",
+         "data": inputJson,
+         "dataType": "json",
+         "contentType": "application/json",
+         success: function(data){
+              console.log(data)
+              $('#saveUpdateConfirmModal').modal('hide');
+            //   if(data.hasO)
+         },
+         error: function(jqXHR, textStatus, errorMessage){
+
+         }
+       })
+   }
+
+
+$('#btnCreateProvince').on('click', function(){
+       window.location.href  = "{% url 'general-settings-create' %}"
+})
+
+
+function convertToJsonForGeneralSetting(selectedSettingId){
+    var generalSettingsJsonData = {};
+    if(selectedSettingId == 'districtRadio'){
+       generalSettingsJsonData.setupType = 'district';
+       generalSettingsJsonData.provinceId = $("#province").attr('data-id')?$('#province').attr('data-id'):$('#province').val();
+    }
+    else if(selectedSettingId == 'provinceRadio'){
+     generalSettingsJsonData.setupType = 'province';
+     
+    }
+    else {
+     generalSettingsJsonData.setupType = 'vdcMunicipality';
+     generalSettingsJsonData.districtId = $("#district").attr('data-id')?$('#district').attr('data-id'):$('#district').val();
+    }
+
+    generalSettingsJsonData.name = $("#generalSettingName").val();
+    generalSettingsJsonData.alias = $("#generalSettingAlias").val();
+
+    return JSON.stringify(generalSettingsJsonData);
+
+}
+
+
+
+
+function loadSelectElementData(selectElementId, requestUrl, jsonKey, jsonValue){
+   // $('#'+ selectElementId).select2();
+
+   var jsonData = {
+      "setupType": jsonValue
+   };
+
+   $.ajax({
+    "url": requestUrl + "?jsonData="+ encodeURI(JSON.stringify(jsonData)),
+    "method": "GET",
+    "dataType": "json",
+    "contentType": "application/json",
+
+    success: function(data){
+         if(data.hasOwnProperty('resultCode')){
+          if(!data.resultCode === '0'){
+              
+          }
+          else {
+           data = data.datas;
+           
+           for(j=0; j<data.length; j++){
+
+             var item = `
+               <option value="${data[j].referenceId}" data-id="${data[j].referenceId}" >${data[j].name}</option>
+             `
+             $('#' + selectElementId).append(item);
+           }
+          }
+         }
+    },
+    error: function(error){
+     console.error(error);
+    }
+   })
+
+
+}
+
+
+</script>
+
+{% endblock %}

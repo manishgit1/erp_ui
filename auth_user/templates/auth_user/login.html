@@ -1,0 +1,143 @@
+<!-- AdminLTE CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+
+<!-- SweetAlert2 (For Success Messages) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Toastr (For Error Messages) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+<style>
+     .small-toast {
+    width: 300px !important;
+    font-size: 14px;
+    padding: 10px;
+}
+</style>
+<div class="container">
+ <div class="row justify-content-center my-md-5 my-4">
+  <div class="login-box">
+   <!-- /.login-logo -->
+   <div class="card card-outline card-primary">
+     <!-- <div class="card-header text-center">
+       <a href="../../index2.html" class="h1"><b>Sign</b>In</a>
+     </div> -->
+     <div class="card-body">
+       <p class="login-box-msg">Sign in to start your session</p>
+  
+       <form id="loginForm">
+        {% csrf_token %}
+         <div class="input-group mb-3">
+           <input type="text" id="username" class="form-control" placeholder="Username">
+           <div class="input-group-append">
+             <div class="input-group-text">
+               <span class="fas fa-envelope"></span>
+             </div>
+           </div>
+         </div>
+         <div class="input-group mb-3">
+           <input type="password" id="password" class="form-control" placeholder="Password">
+           <div class="input-group-append">
+             <div class="input-group-text">
+               <span class="fas fa-lock"></span>
+             </div>
+           </div>
+         </div>
+         <div class="row">
+           <div class="col-8">
+             <div class="icheck-primary">
+               <input type="checkbox" id="remember">
+               <label for="remember">
+                 Remember Me
+               </label>
+             </div>
+           </div>
+           <!-- /.col -->
+           <div class="col-4">
+             <button type="button" id="login-btn" class="btn btn-primary btn-block">Sign In</button>
+           </div>
+           <!-- /.col -->
+         </div>
+       </form>
+  
+       <!-- <div class="social-auth-links text-center mt-2 mb-3">
+         <a href="#" class="btn btn-block btn-primary">
+           <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
+         </a>
+         <a href="#" class="btn btn-block btn-danger">
+           <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
+         </a>
+       </div> -->
+       <!-- /.social-auth-links -->
+  
+       <p class="mb-1">
+         <a href="forgot-password.html">I forgot my password</a>
+       </p>
+       <p class="mb-0">
+         <a href="{% url 'user-register' %}" class="text-center">Register a new membership</a>
+       </p>
+     </div>
+     <!-- /.card-body -->
+   </div>
+   <!-- /.card -->
+  </div>
+  
+ </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script>
+
+     function convertToJsonForLoginData(){
+          var loginData = {}
+          loginData.username = $('#username').val();
+          loginData.password = $('#password').val();
+          return loginData;
+     }
+
+
+     $('#login-btn').on('click', function(){
+    var loginJsonData = JSON.stringify(convertToJsonForLoginData());
+
+    $.ajax({
+        url: "{% url 'user-login-create' %}",
+        headers: {
+            'X-CSRFToken': $('#loginForm').find("input[name='csrfmiddlewaretoken']").val()
+        },
+        method: 'POST',
+        contentType: 'application/json',
+        data: loginJsonData,
+        success: function(data){
+            console.log("Login success:", data);
+
+            if (data.resultCode === "0") { // Success response
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Login Successful!',
+                    text: data.resultDescription,
+                    showConfirmButton: false,
+                    timer: 2000,
+                    customClass: {
+                      popup: 'small-toast'
+                    }
+                });
+                setTimeout(function(){
+                  console.log("jhghjg")
+                  window.location.href = "dashboard/";
+                },2000);
+            } else { // Handle other responses if needed
+                toastr.error("Unexpected response: " + data.resultDescription);
+            }
+
+        },
+        error: function(jqXHR, textStatus, errorMessage){
+            console.error("Login error:", errorMessage);
+        }
+    });
+});
+
+</script>

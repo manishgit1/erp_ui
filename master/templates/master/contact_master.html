@@ -1,0 +1,200 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<form id="contactMasterForm">
+
+ <div class="row">
+  <div class="col-lg-3 col-xs-12">
+   <a href="#personalInformation">Personal Information</a>
+  </div>
+  <div class="col-lg-3 col-xs-12">
+   <a href="#familyInformation">Family Information</a>
+  </div>
+  <div class="col-lg-3 col-xs-12">
+   <a href="#contactPreview">Contact Information Preview</a>
+  </div>
+ </div>
+
+ <ul class="nav nav-tabs mb-3" role="tablist">
+  <div id="personalInformation" role="tab">
+    <div class="row">
+  <div class="card">
+   <div class="card-body">
+     <div class="row">
+
+      <div class="col-md-6">
+        <label for="">VDC/Municipality</label>
+        <select class="form-control  select2" name="contactMasterVDCMunicipality" id="contactMasterVDCMunicipality">
+          <option value="select">SELECT</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="">District</label>
+        <select class="form-control  select2" name="contactMasterDistrict" id="contactMasterDistrict">
+          <option value="select">SELECT</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="">Province</label>
+        <select class="form-control  select2" name="contactMasterProvince" id="contactMasterProvince">
+          <option value="select">SELECT</option>
+        </select>
+      </div>
+        <div class="col-md-6">
+           <div class="form-group ">
+              <label for="exampleInputEmail1">First Name</label>
+              <input type="text" class="form-control form-control-sm" id="exampleInputEmail1" >
+           </div>
+           <div class="form-group ">
+              <label for="exampleInputPassword1">Middle Name</label>
+              <input type="text" class="form-control form-control-sm" id="exampleInputPassword1">
+           </div>
+           <div class="form-group ">
+              <label for="exampleInputPassword1">Last Name</label>
+              <input type="text" class="form-control form-control-sm" id="exampleInputPassword1">
+           </div>    
+        </div>
+        <div class="col-md-6">
+           <div class="form-group">
+             <label for="exampleInputEmail1">Phone Number</label>
+             <input type="text" class="form-control form-control-sm" id="phoneNumber">
+           </div>
+           <div class="form-group">
+             <label for="dateOfBirth" class="form-label">Date Of Birth</label>
+             <div class="row">
+               <input type="text" class="form-control form-control-sm col-md-4" id="dateOfBirth">
+               <input class="col-md-2" type="button" value="AD">
+             </div>
+            
+           </div>
+           <div class="form-group">
+             <label for="">Citizenship Number</label>
+             <input type="text" class="form-control form-control-sm" id="citizenshipNumber">
+           </div>
+           <div class="form-group">
+             <label for="citizenshipIssuedDate" class="form-label">Citizenship Issued Date</label>
+             <div class="row">
+               <input type="text" class="form-control form-control-sm col-md-4" id="citizenshipIssuedDate">
+               <input class="col-md-2" type="button" value="AD">
+             </div>
+            
+           </div>
+        </div>
+     </div>
+   
+   </div>
+  </div>
+
+ </div>
+</div>
+<div class="familyInformation" style="display: none;">
+   <div class="row">
+    <div class="col-md-6">
+      <div class="form-group ">
+        <label for="exampleInputEmail1">Father Name</label>
+        <input type="text" class="form-control form-control-sm" id="exampleInputEmail1" >
+     </div>
+     <div class="form-group">
+      <label for="">Grandfather Name</label>
+      <input type="text" class="form-control form-control-sm" id="grandFatherName">
+     </div>
+    </div>
+    <div class="col-md-6">
+
+
+    </div>
+   </div>
+</div>
+ </ul>
+
+
+
+  
+
+
+<!-- <form id="contactMasterForm"> -->
+
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+  <script>
+    $(document).ready(function() {
+    $('#contactMasterVDCMunicipality').select2();
+    $('#contactMasterDistrict').select2();
+    $('#contactMasterProvince').select2();
+
+    loadSelectElementData('contactMasterVDCMunicipality', "{% url 'general-settings-lists' %}", 'setupType', 'vdcMunicipality');
+    loadSelectElementData('contactMasterDistrict', "{% url 'general-settings-lists' %}", 'setupType', 'district');
+    loadSelectElementData('contactMasterProvince', "{% url 'general-settings-lists' %}", 'setupType', 'province');
+
+    $('#contactMasterVDCMunicipality').on("change", function(){
+        var districtId = $('option:selected', this).data('parent-id');
+        $('#contactMasterDistrict option').each(function(){
+            if($(this).data('id') == districtId){
+                $(this).prop('selected', true);
+                $('#contactMasterDistrict').trigger('change').attr('disabled', true);
+                
+                return false;
+            }
+        });
+    });
+
+    $('#contactMasterDistrict').on("change", function(){
+        var provinceId = $('option:selected', this).data('parent-id');
+        $('#contactMasterProvince option').each(function(){
+            if($(this).data('id') == provinceId){
+                $(this).prop('selected', true);
+                $('#contactMasterProvince').trigger('change').attr('disabled',  true);
+                return false;
+            }
+        });
+    });
+});
+
+
+    
+
+
+  function loadSelectElementData(selectElementId, requestUrl, jsonKey, jsonValue){
+   // $('#'+ selectElementId).select2();
+
+   var jsonData = {
+      "setupType": jsonValue
+   };
+
+   $.ajax({
+    "url": requestUrl + "?jsonData="+ encodeURI(JSON.stringify(jsonData)),
+    "method": "GET",
+    "dataType": "json",
+    "contentType": "application/json",
+
+    success: function(data){
+         if(data.hasOwnProperty('resultCode')){
+          if(!data.resultCode === '0'){
+              
+          }
+          else {
+           data = data.datas;
+           
+           for(j=0; j<data.length; j++){
+
+             var item = `
+               <option value="${data[j].referenceId}" data-parent-id="${data[j]['parentId']}" data-id="${data[j].referenceId}" >${data[j].name}</option>
+             `
+             $('#' + selectElementId).append(item);
+           }
+          }
+         }
+    },
+    error: function(error){
+     console.error(error);
+    }
+   })
+
+
+}
+    
+  </script>
+
+
+
+{% endblock %}

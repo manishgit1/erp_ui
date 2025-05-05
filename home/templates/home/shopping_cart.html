@@ -1,0 +1,281 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Toastr (For Error Messages) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Shopping Cart</h2>
+
+    <div class="card shadow p-4">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="cartItems"></tbody>
+        </table>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h4>Total: $<span id="grandTotal">0.00</span></h4>
+            <button class="btn btn-success btn-lg" id="checkoutBtn">Checkout</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function() {
+    let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+    console.log(cart)
+
+    // Function to update the cart table
+    function updateCartTable() {
+        let cartTable = "";
+        let grandTotal = 0;
+
+        if (cart.length === 0) {
+            cartTable = `<tr><td colspan="5" class="text-center">Your cart is empty</td></tr>`;
+        } else {
+            cart.forEach((item, index) => {
+                let totalPrice = item.price * item.quantity;
+                grandTotal += totalPrice;
+
+                cartTable += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td>
+                            <input type="number" class="form-control quantity" data-index="${index}" value="${item.quantity}" min="1">
+                        </td>
+                        <td>$${totalPrice.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm remove-item" data-index="${index}">Remove</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        $("#cartItems").html(cartTable);
+        $("#grandTotal").text(grandTotal.toFixed(2));
+    }
+
+    updateCartTable();
+
+    // Update cart on quantity change
+    $(document).on("change", ".quantity", function() {
+        let index = $(this).data("index");
+        cart[index].quantity = parseInt($(this).val());
+        sessionStorage.setItem("cart", JSON.stringify(cart));
+        updateCartTable();
+    });
+
+    // Remove item from cart
+    $(document).on("click", ".remove-item", function() {
+        let index = $(this).data("index");
+        cart.splice(index, 1);
+        sessionStorage.setItem("cart", JSON.stringify(cart));
+        updateCartTable();
+    });
+
+    // Open the confirmation modal when Checkout button is clicked
+    $("#checkoutBtn").click(function() {
+        $('#orderConfirmModal').modal('show');
+    });
+
+    // Handle the order confirmation and send an AJAX request
+
+    var jsonData = {
+        items: JSON.stringify(cart)
+    }
+
+    $("#confirmCheckout").click(function() {
+        console.log(jsonData)
+        // let csrfToken = $("input[name='csrfmiddlewaretoken']").val(); // Get CSRF token
+
+        $.ajax({
+            url: "{% url 'orders-create' %}", 
+            headers : {
+                "X-CSRFToken": $('#orderCreateForm').find("input[name='csrfmiddlewaretoken']").val()
+            },           
+            method: 'POST',
+            data: JSON.stringify(jsonData),
+            dataType: 'json',
+            contentType: 'application/json',
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Checkout Successful!',
+                    text: 'Thank you for your purchase!',
+                    showConfirmButton: false,
+                    timer: 2000
+                }).then(() => {
+                    sessionStorage.removeItem("cart");
+                    updateCartTable();
+                    $('#confirmModal').modal('hide');  // Close the modal after success
+                });
+            },
+            error: function(error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong. Please try again!',
+                });
+            }
+        });
+    });
+});
+
+</script>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+ <div class="modal-dialog">
+    <form id="orderCreateForm">
+        {% csrf_token %}
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirm Checkout</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to place this order?
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmCheckout">Confirm Order</button>
+            </div>
+        </div>
+    </form>
+ </div>
+</div>
+
+<!-- Include Required CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<div class="modal fade" id="orderConfirmModal" tabindex="-1" aria-labelledby="orderConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderConfirmModalLabel">Confirm Your Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="orderConfirmForm">
+                    <!-- Address Section -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="streetAddress" class="form-label">Street Address</label>
+                            <input type="text" class="form-control" id="streetAddress" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="province" class="form-label">Province</label>
+                            <input type="text" class="form-control" id="province" required>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label">Payment Method</label>
+                        <select class="form-select select2" id="paymentMethod" required>
+                            <option value=""></option>
+                            <option value="cod">Cash on Delivery</option>
+                            <option value="online">Online Payment</option>
+                        </select>
+                    </div>
+
+                    <!-- Online Payment Fields (Initially Hidden) -->
+                    <div id="onlinePaymentFields" style="display: none;">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="accountName" class="form-label">Account Name</label>
+                                <input type="text" class="form-control" id="accountName">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="accountNumber" class="form-label">Account Number</label>
+                                <input type="text" class="form-control" id="accountNumber">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="bankName" class="form-label">Bank Name</label>
+                                <input type="text" class="form-control" id="bankName">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="w-100 d-flex justify-content-between align-items-center">
+                    <div class="total-price">
+                        <h5>Total Price: $<span id="totalPrice">0.00</span></h5>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" form="orderConfirmForm" class="btn btn-primary">Confirm Order</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Required Scripts -->
+<script>
+$(document).ready(function() {
+    // Initialize Select2
+    $('#paymentMethod').select2({
+        placeholder: "Select payment method"
+    }).css({position: 'absolute'})
+
+    // Show/hide online payment fields
+    $('#paymentMethod').on('change', function() {
+        if ($(this).val() === 'online') {
+            console.log('Online payment selected');
+            $('#onlinePaymentFields').show();
+            $('#accountName, #accountNumber, #bankName').prop('required', true);
+        } else {
+            $('#onlinePaymentFields').hide();
+            $('#accountName, #accountNumber, #bankName').prop('required', false);
+        }
+    });
+
+    // Example total price update (you would need to implement your own logic)
+    function updateTotalPrice(price) {
+        $('#totalPrice').text(price.toFixed(2));
+    }
+    
+    // Call this function when the modal is shown with actual total price
+    updateTotalPrice(149.99); // Example price
+});
+</script>
+
+<style>
+.select2-container .select2-selection--single {
+    height: 38px;
+    padding: 5px 10px;
+}
+.total-price {
+    color: #dc3545;
+    font-weight: bold;
+}
+</style>
+{% endblock %}
+
+

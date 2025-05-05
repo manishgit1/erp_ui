@@ -1,0 +1,50 @@
+<form id="settingsCreateForm">
+    {% csrf_token %}
+    <div class="card card-outline">
+        <div class="card-header">Add General Setting</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group col-md-12">
+                        <label for="generalSettingName" class="form-label">Name</label>
+                        <input type="text" class="form-control form-control-sm" name="" id="generalSettingName">
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="generalSettingAlias" class="form-label">Alias</label>
+                        <input type="text" class="form-control form-control-sm" name="" id="generalSettingAlias">
+                    </div>
+
+                    <div class="form-group col-md-12" style="display: none;" id="provinceDiv">
+                        <label for="generalSetting" class="form-label col-md-12">Province</label>
+                        <select name="province" id="province" class="form-control">
+                            <option value="SELECT">SELECT</option>
+                        </select>
+
+                    </div>
+
+                    <div class="form-group col-md-12" style="display: none;" id="districtDiv">
+                        <label for="generalSetting" class="form-label col-md-12">District</label>
+                        <select name="district" id="district" class="form-control">
+                            <option value="SELECT">SELECT</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-sm btn-info" id="btnSaveGeneralSetting" value="save">Save</button>
+                    </div>
+                </div>
+                <!-- <div class="col-md-6">
+
+            </div> -->
+            </div>
+
+
+            <!-- <div class="form-group col-md-4">
+            <input type="text" class="form-control form-control-sm" name="" id="generalSettingAll">
+           </div> -->
+
+
+
+        </div>
+    </div>
+</form>

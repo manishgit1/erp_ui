@@ -1,0 +1,128 @@
+{% extends "home/base.html" %}
+
+{% block title %}Add Product - My eCommerce{% endblock %}
+
+
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<div class="container">
+    <h2 class="text-center my-4">➕ Add a New Product</h2>
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-8 col-xs-12">
+        <form id="productCreateForm">
+
+         <div class="card shadow-lg p-6">
+                {% csrf_token %}
+
+                <div class="mb-3 px-4 mt-2">
+                    <label for="name" class="form-label">Product Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name"
+                        required>
+                </div>
+
+            
+
+                <div class="mb-3 px-4">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"
+                        placeholder="Brief product description" required></textarea>
+                </div>
+
+                <div class="mb-3 px-4">
+                    <label for="tags" class="form-label">Tags (comma-separated)</label>
+                    <input type="text" class="form-control" id="tags" name="tags"
+                        placeholder="e.g. Electronics, Fashion, Home">
+                </div>
+
+                <div class="mb-3 px-4">
+                    <label for="price" class="form-label">Price ($)</label>
+                    <input type="number" class="form-control" id="price" name="price" step="0.01"
+                        placeholder="Enter product price" required>
+                </div>
+
+                <div class="mb-3 px-4">
+                    <label for="images" class="form-label">Images</label>
+                    <input type="file" class="form-control" id="images" name="images" accept="image/*" multiple>
+                </div>
+
+                <div class="d-grid px-4 mb-3">
+                    <button id="productSaveBtn" type="button" class="btn btn-primary">💾 Save Product</button>
+                </div>
+        </div>
+    </form>
+
+      </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<!-- SweetAlert2 (For Success Messages) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Toastr (For Error Messages) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+ 
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        console.log("document ready");
+    });
+
+    
+
+    $('#productSaveBtn').on('click', function () {
+    var formData = new FormData();
+    
+    formData.append('name', $('#name').val());
+    formData.append('description', $('#description').val());
+    formData.append('tags', $('#tags').val());
+    formData.append('price', $('#price').val());
+    formData.append("csrfmiddlewaretoken", $('#productCreateForm').find("input[name='csrfmiddlewaretoken']").val());
+
+    var files = $('#images')[0].files;
+    for (var i = 0; i < files.length; i++) {
+        formData.append('images', files[i]); // Append each image separately
+    }
+
+    $.ajax({
+        url: "{% url 'create-products' %}",
+        method: 'POST',
+        data: formData,
+        processData: false,  // Important for FormData
+        contentType: false,  // Important for FormData
+        success: function (data) {
+            if (data.hasOwnProperty('resultCode')) {
+                if (data.resultCode != '0') {
+                    toastr.error("Unexpected response: " + data.resultDescription);
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: data.resultDescription,
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        window.location.href = "{% url 'dashboard' %}"; // Redirect after success
+                    });
+                }
+            }
+        },
+        error: function (xhr) {
+            toastr.error("Error: " + xhr.responseJSON.resultDescription);
+        }
+    });
+});
+
+
+
+</script>
+{% endblock %}

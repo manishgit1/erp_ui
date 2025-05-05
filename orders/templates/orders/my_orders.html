@@ -1,0 +1,79 @@
+{% extends 'home/base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>My Orders</h2>
+
+    <div class="table-responsive">
+        <table id="orders-table" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Total Price ($)</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Items</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Orders will be dynamically loaded here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row my-4">
+        <div class="col-lg-3 col-xs-6">
+            <button id="load-orders-btn" class="btn btn-primary">Load My Orders</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function(){
+    $('#load-orders-btn').click(function() {
+        $.ajax({
+            url: '{% url "orders-list-data" %}',  // API URL for fetching orders
+            method: 'GET',
+            success: function(response) {
+                if (response.resultCode === "0") {
+                    var orders = response.order;
+                    var ordersHTML = '';
+
+                    $.each(orders, function(index, order) {
+                        var statusClass = order.status === "DELIVERED" ? "text-success fw-bold" : "text-danger fw-bold";
+
+                        var itemsHTML = '<ul class="mb-0">';
+                        $.each(order.items, function(i, item) {
+                            itemsHTML += `<li>${item.product_name} (${item.quantity} x $${item.price})</li>`;
+                        });
+                        itemsHTML += '</ul>';
+
+                        ordersHTML += `
+                            <tr>
+                                <td>${order.order_id}</td>
+                                <td>$${order.total_price}</td>
+                                <td class="${statusClass}">${order.status}</td>
+                                <td>${order.created_at}</td>
+                                <td>${itemsHTML}</td>
+                            </tr>
+                        `;
+                    });
+
+                    $('#orders-table tbody').html(ordersHTML);
+                } else {
+                    $('#orders-table tbody').html('<tr><td colspan="5" class="text-center">Error retrieving orders.</td></tr>');
+                }
+            },
+            error: function() {
+                $('#orders-table tbody').html('<tr><td colspan="5" class="text-center text-danger">Failed to fetch orders.</td></tr>');
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}
