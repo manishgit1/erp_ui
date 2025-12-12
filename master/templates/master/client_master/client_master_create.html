@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'master/client_master/client_master.html' %}
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+  $(document).ready(function () {
+
+    var data = "{{data|escapejs}}";
+    if(data !== '' && data !== null && data !== undefined){
+      loadContactMasterDataForKyc(data)
+    }
+
+    // $('#clientMasterPermanentMunicipality, #clientMasterCitizenshipIssuedDistrict, #clientMasterPermanentProvince').select2();
+    loadSelectElementData("clientMasterPermanentMunicipality","{% url 'general-settings-lists' %}", "setupType", "vdcMunicipality" );
+    loadSelectElementData("clientMasterCitizenshipIssuedDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
+    loadSelectElementData("clientMasterIdentityIssuedDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
+    loadSelectElementData("clientMasterPermanentDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
+    loadSelectElementData("clientMasterIdentityIssuedDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
+    loadSelectElementData("clientMasterPermanentProvince","{% url 'general-settings-lists' %}", "setupType", "province" );
+    loadSelectElementData("contactMasterCitizenshipIssuedDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
+    loadSelectElementData("clientMasterGender","{% url 'client-type-lists' %}", "setupType", "gender" );
+    loadSelectElementData("clientMasterSalutation","{% url 'client-type-lists' %}", "setupType", "salutation" );
+    loadSelectElementData("clientMasterNationality","{% url 'client-type-lists' %}", "setupType", "nationality" );
+
+  });
+  
+
+  $('#clientMasterPermanentMunicipality').on("change", function(){
+    var municipalityId = $('#clientMasterPermanentMunicipality').val();
+    loadDistrictAndProvinceByMunicipality(municipalityId);
+  })
+
+  function nextStep(step) {
+    $('.wizard-step').removeClass('active');
+    $('#step-' + step).addClass('active');
+  }
+  function prevStep(step) {
+    $('.wizard-step').removeClass('active');
+    $('#step-' + step).addClass('active');
+  }
+
+  // Optional: handle form submit
+  $('#kycForm').on('submit', function (e) {
+    e.preventDefault();
+    alert('Form submitted! You can handle AJAX submit here.');
+  });
+
+
+
+  $('#clientMasterEducation').on("keydown", function (e) {
+    if (e.keyCode == 32) {
+      loadGeneralSearchModalData('clientMasterEducation','/tools/clientType/lists','education','Education')
+    }
+  });
+
+  $('#clientMasterClientNature').on("keydown", function (e) {
+    if (e.keyCode == 32) {
+      loadGeneralSearchModalData('clientMasterClientNature', '/tools/clientType/lists','clientNature', 'Client Nature')
+    }
+  });
+
+  $('#clientMasterIdentityType').on("keydown", function (e) {
+    if (e.keyCode == 32) {
+      loadGeneralSearchModalData('clientMasterIdentityType', '/tools/clientType/lists', 'documentType', 'Document Type')
+    }
+  });
+
+
+  function loadContactMasterDataForKyc(data){
+    var clientData = JSON.parse(data);
+    $('#clientMasterFirstName').val(clientData.firstName);
+    $('#clientMasterMiddleName').val(clientData.middleName);
+    $('#clientMasterLastName').val(clientData.lastName);
+    $('#clientMasterCitizenshipNumber').val(clientData.citizenshipNumber);
+    $('#clientMasterContactNumber').val(clientData.mobileNumber);
+    $('#clientMasterPhoneNumber').val(clientData.contactNumber);
+    // $('#clientMasterFirstName').val(clientData.firstName);
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,161 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+ {% include 'crm/lead_quotation/lead_quotation.html' %}
+{% endblock %}
+
+
+{% block javascript %}
+
+
+<script>
+ $(document).ready(function () {
+
+   //  $('#leadQuotationLoanType').select2();
+   //  $('#leadQuotationSource').select2();
+
+    $('.select2').select2({
+                width: '100%' // Ensure Select2 respects the container width
+     });
+
+    loadSelectElementData("leadQuotationLoanType","{% url 'loan-type-lists' %}", "", "" );
+    loadSelectElementData("leadQuotationSource","{% url 'lead-source-lists' %}", "", "" );
+
+    loadSelectElementData("leadQuotationPermanentMunicipality","{% url 'general-settings-lists' %}", "setupType", "vdcMunicipality" );
+    loadSelectElementData("leadQuotationPermanentDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
+    loadSelectElementData("leadQuotationPermanentProvince","{% url 'general-settings-lists' %}", "setupType", "province" );
+
+
+   
+
+    var $steps = $('.step');
+    var $nextBtns = $('.next-btn');
+    var $prevBtns = $('.prev-btn');
+    var $tabPanes = $('.tab-pane');
+    var currentStep = 0;
+
+    function showStep(index) {
+       $tabPanes.each(function (i) {
+          if (i === index) {
+             $(this).addClass('show active');
+          } else {
+             $(this).removeClass('show active');
+          }
+       });
+
+       // Highlight the steps
+       $steps.each(function (i) {
+          if (i <= index) {
+             $(this).addClass('active');
+          } else {
+             $(this).removeClass('active');
+          }
+       });
+
+       currentStep = index;
+    }
+
+    $nextBtns.on('click', function () {
+       if($(this).attr('id')=='btnNextMobileNumberInformation'){
+         var inputJson = {
+         'mobileNumber': $('#leadQuotationMobileNumber').val()
+         };
+         checkIfMobileContactExists("{% url 'check-if-contact-exists' %}", inputJson)
+       }
+       if (currentStep < $steps.length - 1) {
+          showStep(currentStep + 1);
+       }
+    });
+
+    $prevBtns.on('click', function () {
+       if (currentStep > 0) {
+          showStep(currentStep - 1);
+       }
+    });
+
+    $steps.on('click', function () {
+       var index = $steps.index(this);
+       showStep(index);
+    });
+
+    // Initial show
+    showStep(0);
+ });
+
+
+ $('#btnNextMobileNumberInformation').off('click').on('click', function(){
+       var inputJson = {
+         'mobileNumber': $('#leadQuotationMobileNumber').val()
+       };
+       checkIfMobileContactExists("{% url 'check-if-contact-exists' %}", inputJson)
+  });
+
+  function checkIfMobileContactExists(requestUrl, jsonData){
+      return $.ajax({
+         url: requestUrl + "?jsonData=" + encodeURI(JSON.stringify(jsonData)),
+         method: "GET", 
+         dataType: "json",
+         applicationType: "application/json",
+         success: function(data){
+
+            if(data.hasOwnProperty("resultCode")){
+               if(data.resultCode == '0'){
+                  data = data.globalContactData;
+
+                  $('#leadQuotationCustomerName').val(data.firstName + ' ' + data.lastName);
+                  $('#leadQuotationContactNumber').val(data.mobileNumber);
+                  $('#leadQuotationPermanentMunicipality').val(data.permanentMunicipality).change();
+                  $('#leadQuotationPermanentProvince').val(data.permanentProvince).change();
+                  $('#leadQuotationPermanentDistrict').val(data.permanentDistrict).change();
+                  // $('#leadQuotationPermanentMunicipality').val(data.permanentMunicipality).trigger('change');
+                  // $('#leadQuotationPermanentMunicipality').val(data.permanentMunicipality).trigger('change');
+                  $('#leadQuotationEmail').val(data.email);
+
+
+               }
+            }
+           
+         },
+         error: function(){
+
+         }
+        })
+  }
+
+
+  $('#btnSaveLeadQuotation').off('click').on('click', function(){
+      var form = $("#leadQuotationForm");
+
+      var inputJson = convertToJsonForLeadQuotation();
+
+      openConfirmSaveModal(inputJson, 'leadQuotationForm', saveInsertUpdateData, "{% url 'lead-quotation-create' %}", "{% url 'lead-quotation-list' %}");
+
+  })
+
+   function convertToJsonForLeadQuotation() {
+      var leadQuotationData = {};
+
+      leadQuotationData.mobileNumber = $('#leadQuotationMobileNumber').val();
+
+      leadQuotationData.requestType = $('#leadQuotationRequestType').val();
+      // leadQuotationData.permanentMunicipality = $('#leadQuotationPermanentMunicipality').val();
+      leadQuotationData.customerName = $('#leadQuotationCustomerName').val();
+      // leadQuotationData.permanentDistrict = $('#leadQuotationPermanentDistrict').val();
+      // leadQuotationData.permanentProvince = $('#leadQuotationPermanentProvince').val();
+      leadQuotationData.email = $('#leadQuotationEmail').val();
+      // leadQuotationData.permanentWardNo = $('#leadQuotationPermanentWardNo').val();
+
+      leadQuotationData.loanType = $('#leadQuotationLoanType').val();
+      leadQuotationData.leadSource = $('#leadQuotationSource').val();
+      leadQuotationData.loanAmount = $('#leadQuotationLoanAmount').val();
+      leadQuotationData.interestRate = $('#leadQuotationInterestRate').val();
+      leadQuotationData.tenure = $('#leadQuotationLoanTenure').val();
+      leadQuotationData.remarks = $('#leadQuotationRemarks').val();
+
+      return JSON.stringify(leadQuotationData);
+   }
+
+</script>
+
+{% endblock %}

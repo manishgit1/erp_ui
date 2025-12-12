@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+  <style>
+  .card-grid {
+    transition: 0.3s;
+  }
+
+  .card-grid:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  }
+</style>
+
+
+ {% include 'tools/client_type/client_type_radio.html' %}
+
+<div class="card mt-4">
+  <div class="card-header">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="btn btn-primary" href="{% url 'client-type-create' %}"><i class="fas fa-plus"></i> Add New</a>
+        </li>
+      </ul>
+    </nav>
+
+  </div>
+  <div class="card-body">
+    <table id="clientTypeListTable" class="table table-sm table-bordered table-hover" width="100%">
+      <!-- <thead>
+      </thead>
+      <tbody>
+      </tbody> -->
+    </table>
+  </div>
+
+</div>
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+
+  $(document).ready(function(){
+    $('#clientTypeGender').prop('checked',true);
+    var setupType = $("input[name='clientTypeRadio']:checked").val();
+    loadClientTypeListForSelectedRadio("{% url 'client-type-lists' %}",setupType);
+  });
+
+
+
+  $('input[name="clientTypeRadio"]').on('change', function() {
+    loadClientTypeListForSelectedRadio("{% url 'client-type-lists' %}",$(this).val());
+  });
+
+  function loadClientTypeListForSelectedRadio(requestUrl,setupType) {
+    var jsonData = {
+      'setupType': setupType
+    };
+    $.ajax({
+      url: requestUrl + "?jsonData="+ encodeURI(JSON.stringify(jsonData)),
+      method: "GET",
+      dataType: "json",
+      contentType: "application/json",
+      success: function (data) {
+
+        if($.fn.DataTable.isDataTable($('#clientTypeListTable'))){
+          $('#clientTypeListTable').DataTable().clear().destroy();
+          $('#clientTypeListTable tbody').empty();
+        }
+        var data = data.datas;
+        var keys = Object.keys(data[0]);
+        var columns = [];
+        var columnDefs = [];
+
+        columns.push({"title": "Name", "data": "name"});
+        columns.push({"title": "Remarks", "data": "remarks"});
+        // columns.push({"title": "Name", "data": "name"});
+
+        makeDataTable('clientTypeListTable',data, columns, columnDefs)
+
+       
+      },
+      error: function (jqXHR, textStatus, errorMessage) {
+        console.error('Error:', errorMessage);
+      }
+    });
+  }
+
+
+
+</script>
+{% endblock %}

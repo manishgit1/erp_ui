@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'crm/inquiry_follow_up/inquiry_follow_up.html' %}
+
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+ $(document).ready(function () {
+  loadInquiryFollowUpLists("{% url 'inquiry-follow-up-lists' %}");
+ })
+
+
+
+ function loadInquiryFollowUpLists(requestUrl) {
+  $.ajax({
+   url: requestUrl,
+   method: "GET",
+   dataType: "json",
+   contentType: "application/json",
+   success: function (response) {
+    console.log(response);
+
+    $('#inquiryFollowUpTable tbody').empty();
+
+    var data = response.datas;
+
+    data.forEach(function (item) {
+     var tr = `
+            <tr>
+                <td>${item.customerName || ''}</td>
+                <td>${item.mobileNumber || ''}</td>
+                <td>${item.permanentAddress || ''}</td>
+                <td>${item.loanType || ''}</td>
+                <td>${item.loanAmount || ''}</td>
+                <td>-</td>
+                <td style="max-width:200px;">${item.remarks || ''}</td>
+                <td></td>
+                <td>
+                    <button class="btn btn-sm btn-success mx-1" type="button" onclick="showConfirmModalForInquiryFollowUp('QUOTATION',openDocumentsUploadForInquiryFollowUp, '${item.referenceId}')">
+                    <i class="fa-solid fa-file"></i>
+                    </button>
+                    
+                </td>
+
+            </tr>
+
+                `;
+
+     $('#inquiryFollowUpTable tbody').append(tr);
+    });
+   },
+   error: function (jqXHR, textStatus, errorMessage) {
+    console.error('Error loading inquiry follow-up:', errorMessage);
+   }
+  });
+ }
+
+//  <td><button class="btn btn-sm btn-warning" type="button" onclick="showLeadFollowUpModal('${item.referenceId}')">Follow Up</button></td>
+
+         function showConfirmModalForInquiryFollowUp(operationType, callback,referenceId) {
+            let title = "Are you sure?";
+
+            if (operationType.toUpperCase() === "QUOTATION") {
+                title = "Do you want to proceed to documents upload?";
+            } 
+            $("#saveUpdateConfirmModal .modal-dynamic-title").text(title);
+
+            $(document).on("click","#btnSaveModal", function () {
+                if (typeof callback === "function") {
+                    callback(referenceId); 
+                }
+                $("#saveUpdateConfirmModal").modal("hide");
+            });
+
+            $(document).on("click","#btnCancelModal", function () {
+                $("#saveUpdateConfirmModal").modal("hide");
+            });
+
+            $("#saveUpdateConfirmModal").modal("show");
+        }
+
+
+        function openDocumentsUploadForInquiryFollowUp(referenceId){
+            window.location.href = "{% url 'document-upload-create' %}?leadId=" + referenceId;
+            // $.ajax({
+            //     url: "{% url 'document-upload-create' %}?leadId=" + referenceId,
+            //     dataType: "json",
+            //     method: "GET",
+            //     applicationType: "application/json",
+            //     success: function(data){
+                    
+            //     }
+            // })
+
+        }
+
+
+
+
+// <td class="text-center">
+//                             <button class="btn btn-primary mx-1" onclick="proceedLead('${item.reference_id}')">Proceed</button>
+//                             <button class="btn btn-secondary mx-1" onclick="uploadDocuments('${item.reference_id}')">Upload Documents</button>
+
+//                             <div class="inline-block relative">
+//                                 <button class="btn btn-danger mx-1" onclick="toggleLossDropdown('${item.reference_id}')">End Deal</button>
+//                                 <div id="loss-${item.reference_id}" class="loss-dropdown hidden absolute bg-white shadow p-2 mt-1 z-10">
+//                                     <textarea placeholder="Enter loss reason" class="w-64 h-20 border p-1"></textarea>
+//                                     <button class="btn btn-danger btn-sm mt-1" onclick="submitLoss('${item.reference_id}')">Submit Loss</button>
+//                                 </div>
+//                             </div>
+
+//                             <div class="inline-block relative">
+//                                 <button class="btn btn-warning mx-1" onclick="toggleFollowupDropdown('${item.reference_id}')">Follow-up</button>
+//                                 <div id="followup-${item.reference_id}" class="followup-dropdown hidden absolute bg-white shadow p-2 mt-1 z-10">
+//                                     <textarea placeholder="Add follow-up remarks" class="w-64 h-20 border p-1"></textarea>
+//                                     <button class="btn btn-warning btn-sm mt-1" onclick="submitFollowup('${item.reference_id}')">Submit Follow-up</button>
+//                                 </div>
+//                             </div>
+//                         </td>
+</script>
+{% endblock %}

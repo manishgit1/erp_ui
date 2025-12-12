@@ -1,0 +1,70 @@
+{% load static %}
+
+<!-- Print Modal -->
+<div class="modal fade" id="printModal" tabindex="-1" aria-labelledby="printModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="printModalLabel">Customer Document Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body" id="printArea">
+        
+        <!-- Customer Info Table -->
+        <table class="table table-bordered mb-4" id="documentPrintCustomerTable">
+          <tbody>
+           
+          </tbody>
+        </table>
+
+        <!-- Vertical Document Images Section -->
+        <h6 class="fw-bold mb-3">Attached Documents</h6>
+
+        <div id="documentImagesContainer">
+         
+        </div>
+
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="printDiv('printArea')">Print</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Print Style -->
+<style>
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #printArea, #printArea * {
+      visibility: visible;
+    }
+    #printArea {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    .modal-footer {
+      display: none !important;
+    }
+  }
+</style>
+
+<!-- Print Function -->
+<script>
+  function printDiv(divId) {
+    window.print();
+  }
+</script>

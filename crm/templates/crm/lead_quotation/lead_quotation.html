@@ -1,0 +1,278 @@
+<style>
+   .stepper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      position: relative;
+   }
+
+   .stepper::before {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #dee2e6;
+      z-index: 0;
+   }
+
+   .step {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+   }
+
+   .step:active {
+      transform: scale(0.95);
+   }
+
+   .step .circle {
+      width: 40px;
+      height: 40px;
+      background: #e9ecef;
+      /* Light gray for default */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #495057;
+      margin-bottom: 5px;
+      transition: background 0.3s, color 0.3s;
+   }
+
+   .step.active .circle {
+      background: #0d6efd;
+      color: #fff;
+   }
+
+   .step:hover .circle {
+      background: #b0c4de;
+   }
+
+   .step span {
+      font-size: 0.9rem;
+      color: #495057;
+   }
+
+   .tab-content {
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 20px;
+      background: #fff;
+   }
+
+   .form-section {
+      margin-bottom: 1rem;
+   }
+</style>
+
+
+<div class="container">
+   <h5 class="mb-3">Loan Application</h5>
+   <div class="stepper">
+      <div class="step active">
+         <div class="circle">1</div><span>Contact</span>
+      </div>
+      <div class="step">
+         <div class="circle">2</div><span>Personal Details</span>
+      </div>
+      <div class="step">
+         <div class="circle">3</div><span>Loan Details</span>
+      </div>
+   </div>
+
+   <form id="leadQuotationForm">
+      {% csrf_token %}
+      <div class="tab-content">
+         <!-- Step 1: Customer Details -->
+         <div class="tab-pane fade show active">
+
+
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Mobile Number</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm" id="leadQuotationMobileNumber"
+                        name="leadQuotationMobileNumber">
+                  </div>
+               </div>
+            </div>
+
+
+            <button id="btnNextMobileNumberInformation" type="button" class="btn btn-primary next-btn">Next</button>
+         </div>
+
+         <!-- Step 2: Product Details -->
+         <div class="tab-pane fade">
+            <div class="row">
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Request Type</label>
+                     <div class="col-md-8">
+                        <input type="text" class="form-control form-control-sm" id="leadQuotationRequestType"
+                           name="leadQuotationRequestType" value="INDIVIDUAL" readonly>
+                     </div>
+                  </div>
+               </div>
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Per. Municipality</label>
+                     <div class="col-md-8">
+                        <select id="leadQuotationPermanentMunicipality" name="leadQuotationPermanentMunicipality"
+                           class="form-control form-select-sm">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Customer Name</label>
+                     <div class="col-md-8">
+                        <input type="text" class="form-control form-control-sm" id="leadQuotationCustomerName"
+                           name="leadQuotationCustomerName">
+                     </div>
+                  </div>
+               </div>
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Per. District</label>
+                     <div class="col-md-8">
+                        <select id="leadQuotationPermanentDistrict" name="leadQuotationPermanentDistrict"
+                           class="form-control form-select-sm">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Mobile Number</label>
+                     <div class="col-md-8">
+                        <input type="text" class="form-control form-control-sm" id="leadQuotationContactNumber"
+                           name="leadQuotationContactNumber">
+                     </div>
+                  </div>
+               </div>
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Per. Province</label>
+                     <div class="col-md-8">
+                        <select id="leadQuotationPermanentProvince" name="leadQuotationPermanentProvince"
+                           class="form-control form-select-sm">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Email</label>
+                     <div class="col-md-8">
+                        <input type="text" class="form-control form-control-sm" id="leadQuotationEmail"
+                           name="leadQuotationEmail">
+                     </div>
+                  </div>
+               </div>
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Per. Ward No.</label>
+                     <div class="col-md-8">
+                        <input type="text" class="form-control form-control-sm" id="leadQuotationPermanentWardNo"
+                           name="leadQuotationPermanentWardNo">
+                        </select>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <button type="button" class="btn btn-secondary prev-btn">Previous</button>
+            <button type="button" class="btn btn-primary next-btn">Next</button>
+         </div>
+
+         <div class="tab-pane fade">
+            <div class="row">
+               <div class="col-md-12 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                
+
+                        <label for="" class="col-md-2">Loan Type</label>
+                        <div class="col-md-4">
+                           <select class="form-control select2 w-100" name="leadQuotationLoanType" id="leadQuotationLoanType">
+                           <option value="select">SELECT</option>
+                        </select>
+                        </div>
+
+                        <label for="" class="col-md-2">Lead Source</label>
+                        <div class="col-md-4">
+                           <select class="form-control select2 w-100" name="leadQuotationSource" id="leadQuotationSource">
+                           <option value="select">SELECT</option>
+                        </select>
+                        </div>
+                  </div>
+
+
+               </div>
+               
+            </div>
+
+            <div class="row">
+           
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Loan Amount</label>
+                     <div class="col-md-8">
+                        <input type="text" class="form-control form-control-sm" id="leadQuotationLoanAmount"
+                           name="leadQuotationLoanAmount">
+                        </input>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            <div class="row">
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Interest Rate</label>
+                     <div class="col-md-8">
+                         <input type="text" class="form-control form-control-sm" id="leadQuotationInterestRate"
+                           name="leadQuotationInterestRate">
+                        </input>
+                     </div>
+                  </div>
+               </div>
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Tenure</label>
+                     <div class="col-md-8">
+                        <input type="text" class="form-control form-control-sm" id="leadQuotationLoanTenure"
+                           name="leadQuotationLoanTenure">
+                     </input>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="mb-2">
+               <label class="form-label">Remarks</label>
+               <textarea class="form-control" name="leadQuotationRemarks" id="leadQuotationRemarks"></textarea>
+            </div>
+            <button type="button" class="btn btn-secondary prev-btn">Previous</button>
+            <button type="button" id="btnSaveLeadQuotation" class="btn btn-success">Save</button>
+         </div>
+      </div>
+   </form>
+</div>

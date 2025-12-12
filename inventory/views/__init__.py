@@ -1,0 +1,1 @@
+from .views_inventory_settings import *

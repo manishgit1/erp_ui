@@ -1,0 +1,252 @@
+<style>
+   .stepper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      position: relative;
+   }
+
+   .stepper::before {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #dee2e6;
+      z-index: 0;
+   }
+
+   .step {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+   }
+
+   .step:active {
+      transform: scale(0.95);
+   }
+
+   .step .circle {
+      width: 40px;
+      height: 40px;
+      background: #e9ecef;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #495057;
+      margin-bottom: 5px;
+      transition: background 0.3s, color 0.3s;
+   }
+
+   .step.active .circle {
+      background: #0d6efd;
+      color: #fff;
+   }
+
+   .step:hover .circle {
+      background: #b0c4de;
+   }
+
+   .step span {
+      font-size: 0.9rem;
+      color: #495057;
+   }
+
+   .tab-content {
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      padding: 20px;
+      background: #fff;
+   }
+
+   .form-section {
+      margin-bottom: 1rem;
+   }
+</style>
+
+
+<h5 class="mb-3">Contact Master</h5>
+<div class="stepper">
+   <div class="step active">
+      <div class="circle">1</div><span>Contact Information</span>
+   </div>
+   <div class="step">
+      <div class="circle">2</div><span>Preview</span>
+   </div>
+</div>
+
+<form id="contactMasterForm">
+   {% csrf_token %}
+   <div class="tab-content">
+      <!-- Step 1: Customer Details -->
+      <div class="tab-pane fade show active">
+
+         <div class="row">
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">First Name</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm" id="contactMasterFirstName"
+                        name="contactMasterFirstName">
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Per. Municipality</label>
+                  <div class="col-md-8">
+                     <select id="contactMasterPermanentMunicipality" name="contactMasterPermanentMunicipality"
+                        class="form-control form-select-sm">
+                        <option value="">SELECT</option>
+                     </select>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Middle Name</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm form-control-sm" id="contactMasterMiddleName"
+                        name="contactMasterMiddleName">
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Per. District</label>
+                  <div class="col-md-8">
+                     <select id="contactMasterPermanentDistrict" name="contactMasterPermanentDistrict"
+                        class="form-control form-select-sm">
+                        <option value="">SELECT</option>
+                     </select>
+                  </div>
+
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Last Name</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm" id="contactMasterLastName"
+                        name="contactMasterLastName">
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Per. Province</label>
+                  <div class="col-md-8">
+                     <select id="contactMasterPermanentProvince" name="contactMasterPermanentProvince"
+                        class="form-control form-select-sm">
+                        <option value="">SELECT</option>
+                     </select>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Mobile Number</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm" id="contactMasterMobileNumber"
+                        name="contactMasterMobileNumber">
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Per. Ward No.</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm" id="contactMasterPermanentWardNo"
+                        name="contactMasterPermanentWardNo">
+                     </select>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Phone Number</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm" id="contactMasterPhoneNumber"
+                        name="contactMasterPhoneNumber">
+                  </div>
+               </div>
+            </div>
+
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Citizenship Number</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm" id="contactMasterCitizenshipNumber"
+                        name="contactMasterCitizenshipNumber">
+                     </select>
+                  </div>
+               </div>
+            </div>
+            
+         </div>
+         <div class="row">
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Email</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm" id="contactMasterEmail"
+                        name="contactMasterEmail">
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Citizenship Issued District</label>
+                  <div class="col-md-8">
+                     <select class="form-control form-select-sm" id="contactMasterCitizenshipIssuedDistrict"
+                        name="contactMasterCitizenshipIssuedDistrict">
+                        <option value="">SELECT</option>
+                     </select>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-md-6 col-sm-12 col-xs-12">
+               <div class="form-group row">
+                  <label for="" class="col-md-4 form-label">Citizenship Issued Date</label>
+                  <div class="col-md-8">
+                     <input type="text" class="form-control form-control-sm" id="contactMasterCitizenshipIssuedDate"
+                        name="contactMasterCitizenshipIssuedDate">
+                     </select>
+                  </div>
+               </div>
+            </div>
+            
+         </div>
+         <button type="button" class="btn btn-primary next-btn">Next</button>
+      </div>
+
+      <div class="tab-pane fade">
+
+         <div id="customerPreview" class="mb-4 border rounded p-3 bg-light">
+        </div>
+       
+         <button type="button" class="btn btn-secondary prev-btn">Previous</button>
+         <button type="button" class="btn btn-success" id="btnSaveContactMaster" >Save</button>
+      </div>
+
+    
+   </div>
+ </form>

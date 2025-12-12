@@ -1,0 +1,27 @@
+<form id="leadSourceForm">
+ {% csrf_token %}
+<div class="row">
+    <div class="col-md-6 col-sm-12 col-xs-12">
+       <div class="form-group row">
+          <label for="" class="col-md-4 form-label">Name</label>
+          <div class="col-md-8">
+             <input type="text" class="form-control form-control-sm" id="leadSourceName"
+                name="leadSourceName">
+          </div>
+       </div>
+    </div>
+    <div class="col-md-6 col-sm-12 col-xs-12">
+       <div class="form-group row">
+          <label for="" class="col-md-4 form-label">Remarks</label>
+          <div class="col-md-8">
+             <input type="text" class="form-control form-control-sm" id="leadSourceRemarks"
+                name="leadSourceRemarks">
+             </select>
+          </div>
+       </div>
+    </div>
+</div>
+<div class="row justify-content-end mr-2">
+    <button type="button" class="btn btn-sm btn-success" id="btnSaveLeadSource">Save</button>
+</div>
+</form>

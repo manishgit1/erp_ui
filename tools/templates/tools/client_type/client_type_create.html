@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% include 'tools/client_type/client_type.html' %}
+{% endblock %}
+
+
+{% block javascript %}
+<script>
+
+$(document).ready(function(){
+   $('#clientTypeGender').prop('checked',true);
+})
+
+$('#btnSaveClientType').off('click').on('click', function(){
+   
+  var setupType = $("input[name='clientTypeRadio']:checked").val();
+  var jsonData = convertToJsonForClientType();
+
+  // showConfirmModal('btnYesClientType', saveInsertUpdateData);
+
+  openConfirmSaveModal(jsonData, 'clientTypeForm', saveInsertUpdateData, "/tools/clientType/create?jsonData="+encodeURI(JSON.stringify({"setupType": setupType})),"{% url 'client-type-list' %}")
+})
+
+
+function convertToJsonForClientType(){
+  var clientTypeData = {};
+  // clientTypeData.setupType = $("input[name='clientTypeRadio']:checked").val();
+  clientTypeData.name = $('#clientTypeName').val();
+  clientTypeData.remarks = $('#clientTypeRemarks').val();
+  return JSON.stringify(clientTypeData);
+}
+</script>
+{% endblock %}

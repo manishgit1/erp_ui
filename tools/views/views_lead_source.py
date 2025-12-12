@@ -1,0 +1,66 @@
+from django.views.generic import CreateView, View
+from django.shortcuts import render
+from django.conf import settings
+import requests
+from django.http import JsonResponse
+
+API_URL = settings.API_URL
+
+
+class LeadSourceCreateView(CreateView):
+   
+   def get(self,request,format=None):
+      return render(request, 'tools/lead_source/lead_source_create.html')
+   
+
+   def post(self,request,*args):
+      try:
+         headers = {
+               "Content-Type": request.META.get("CONTENT_TYPE", "application/json")
+         }
+
+         response = requests.post(
+               API_URL + '/tools/leadSource/create',
+               data=request.body,
+               headers=headers,
+               timeout=30
+         )
+
+         if response.status_code == 200:
+           return JsonResponse(response.json(), status=200)
+         else:
+           return JsonResponse(response.json(), status=500)
+
+      except requests.exceptions.Timeout:
+         return JsonResponse({"status": "error", "message": "API request timed out."}, status=504)
+
+      except requests.exceptions.RequestException as e:
+         return JsonResponse({"status": "error", "message": str(e)}, status=502)
+
+      except Exception as e:
+         return JsonResponse({"status": "error", "message": str(e)}, status=500)
+      
+
+
+class LeadSourceListView(View):
+   
+   def get(self,request,format=None):
+      return render(request, 'tools/lead_source/lead_source_list.html')
+
+
+class LeadSourceListDataView(View):
+
+   def get(self,request,format=None):
+      try:
+         request_url = API_URL + '/tools/leadSource/list'
+         response = requests.get(request_url, timeout=20)
+         response.raise_for_status()  
+         if response.status_code == 200:
+           return JsonResponse(response.json(), status=200)
+         else:
+           return JsonResponse(response.json(), status=500)
+      except requests.RequestException as e:
+         return JsonResponse({"success": False, "error": str(e)}, status=500)
+      
+      except Exception as e:
+         return JsonResponse({"status": "error", "message": str(e)}, status=500)

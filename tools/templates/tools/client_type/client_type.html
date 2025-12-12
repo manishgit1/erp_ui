@@ -1,0 +1,29 @@
+<form id="clientTypeForm">
+ {% csrf_token %}
+
+ {% include 'tools/client_type/client_type_radio.html' %}
+<div class="row mt-4">
+    <div class="col-md-6 col-sm-12 col-xs-12">
+       <div class="form-group row">
+          <label for="" class="col-md-4 form-label">Name</label>
+          <div class="col-md-8">
+             <input type="text" class="form-control form-control-sm" id="clientTypeName"
+                name="clientTypeName">
+          </div>
+       </div>
+    </div>
+    <div class="col-md-6 col-sm-12 col-xs-12">
+       <div class="form-group row">
+          <label for="" class="col-md-4 form-label">Remarks</label>
+          <div class="col-md-8">
+             <input type="text" class="form-control form-control-sm" id="clientTypeRemarks"
+                name="clientTypeRemarks">
+             </select>
+          </div>
+       </div>
+    </div>
+</div>
+<div class="row justify-content-end mr-2">
+    <button type="button" class="btn btn-sm btn-success" id="btnSaveClientType">Save</button>
+</div>
+</form>

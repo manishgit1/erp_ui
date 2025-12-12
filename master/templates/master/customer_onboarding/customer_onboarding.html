@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-3 col-sm-6 mb-4">
+        <a href="{% url 'contact-master-list' %}" class="text-decoration-none">
+            <div class="card shadow-sm h-40 border-0 hover-shadow text-center">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                    <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                    <h5 class="card-title mb-0">Contact Master</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3 col-sm-6 mb-4">
+        <a href="{% url 'client-master-list' %}" class="text-decoration-none">
+            <div class="card shadow-sm h-40 border-0 hover-shadow text-center">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                    <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                    <h5 class="card-title mb-0">KYC</h5>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+{% endblock %}

@@ -1,0 +1,33 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+ {% include 'tools/loan_type/loan_type.html' %}
+{% endblock %}
+
+
+{% block javascript %}
+
+<script>
+
+ $('#btnSaveLoanType').off('click').on('click', function(){
+   var form = $("#loanTypeForm");
+
+   var inputJson = convertToJsonForLoanType();
+
+
+    openConfirmSaveModal(inputJson, 'loanTypeForm', saveInsertUpdateData, "{% url 'loan-type-create' %}", "{% url 'loan-type-list' %}");
+
+})
+
+function convertToJsonForLoanType(){
+   var loanTypeData = {};
+   loanTypeData.name = $('#loanTypeName').val();
+   loanTypeData.remarks = $('#loanTypeRemarks').val();
+   loanTypeData.nameInNepali = '';
+   loanTypeData.remarksInNepali = '';
+   return JSON.stringify(loanTypeData);
+}
+</script>
+
+{% endblock %}

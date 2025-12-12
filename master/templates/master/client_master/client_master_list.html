@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+  .card-grid {
+    transition: 0.3s;
+  }
+
+  .card-grid:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  }
+</style>
+<div class="card ">
+
+  <div class="card-header">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="btn btn-primary" href="{% url 'client-master-create' %}"><i class="fas fa-plus"></i> Add New</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="card-body">
+    <table id="clientMasterTable" class="table table-bordered table-hover">
+      <thead>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+
+<script>
+  $(function () {
+    $('#data-table').DataTable();
+
+    $('#grid-view-btn').on('click', function () {
+      $('#list-view').addClass('d-none');
+      $('#grid-view').removeClass('d-none');
+    });
+
+    $('#list-view-btn').on('click', function () {
+      $('#grid-view').addClass('d-none');
+      $('#list-view').removeClass('d-none');
+    });
+  });
+</script>
+
+{% endblock content %}

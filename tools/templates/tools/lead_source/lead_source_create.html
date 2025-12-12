@@ -1,0 +1,32 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+ {% include 'tools/lead_source/lead_source.html' %}
+{% endblock %}
+
+
+{% block javascript %}
+
+<script>
+
+ $('#btnSaveLeadSource').off('click').on('click', function(){
+   var form = $("#leadSourceForm");
+
+   var inputJson = convertToJsonForLeadSource();
+
+   openConfirmSaveModal(inputJson, 'leadSourceForm', saveInsertUpdateData, "{% url 'lead-source-create' %}", "{% url 'lead-source-list' %}");
+
+})
+
+function convertToJsonForLeadSource(){
+   var leadSourceData = {};
+   leadSourceData.name = $('#leadSourceName').val();
+   leadSourceData.remarks = $('#leadSourceRemarks').val();
+   leadSourceData.nameInNepali = '';
+   leadSourceData.remarksInNepali = '';
+   return JSON.stringify(leadSourceData);
+}
+</script>
+
+{% endblock %}

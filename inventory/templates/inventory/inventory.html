@@ -1,0 +1,32 @@
+<!-- templates/sales_menu.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4 text-center">Sales Management</h2>
+
+    <div class="row">
+        {% for item in menuItems %}
+        <div class="col-md-4 col-sm-6 mb-4">
+            <a href="{{ item.url }}" class="text-decoration-none">
+                <div class="card shadow-sm h-100 text-center border-0 hover-shadow">
+                    <div class="card-body">
+                        <i class="{{ item.icon }} fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">{{ item.name }}</h5>
+                        <p class="card-text text-muted">{{ item.description }}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.hover-shadow:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    transform: translateY(-3px);
+    transition: all 0.3s ease;
+}
+</style>
+{% endblock %}

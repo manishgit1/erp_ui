@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+<style>
+  #customerDocs td,
+  #guarantorDocs td{
+    text-align: center;
+    vertical-align: center !important;
+  }
+</style>
+
+{% block content %}
+<form id="documentUploadForm">
+  {% csrf_token %}
+  <ul class="nav nav-tabs" id="docTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link active" id="customer-tab" data-toggle="tab" href="#customerDocs" type="button"
+      role="tab">
+      Customer Documents
+  </a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link" id="guarantor-tab" data-toggle="tab" href="#guarantorDocs" type="button"
+      role="tab">
+      Guarantor Documents
+  </a>
+  </li>
+</ul>
+
+<input type="hidden" name="documentUploadHiddenLeadQuotationId" id="documentUploadHiddenLeadQuotationId" value="{{leadId}}">
+
+<div class="tab-content mt-3" id="docTabsContent">
+
+  <div class="tab-pane fade show active" id="customerDocs" role="tabpanel" aria-labelledby="customer-tab">
+    <table class="table table-bordered " id="customerDocsTable">
+      <tbody>
+        <tr>
+          <td width="30%"><strong>Citizenship</strong></td>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <img class="img-thumbnail documentUploadPreview image-zoom" style="width:200px; height:200px; object-fit:contain;">
+              <div>
+                <input type="file" id="customerCitizenship" class="form-control form-control-sm mb-2 documentUploadImage">
+                <input type="hidden" id="customerCitizenshipHiddenFileName" name="customerCitizenshipHiddenFileName">
+              </div>
+
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td width="30%"><strong>Passport</strong></td>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <img class="img-thumbnail documentUploadPreview image-zoom" style="width: 200px;height: 200px;object-fit: contain;">
+
+              <div>
+                <input type="file" id="customerPassport" class="form-control form-control-sm mb-2 documentUploadImage">
+                <input type="hidden" id="customerPassportHiddenFileName" name="customerPassportHiddenFileName">
+              </div>
+
+            </div>
+          </td> 
+        </tr>
+      </tbody>
+    </table>
+    <div class="row justify-content-end mr-4 py-2">
+      <button type="button" class="btn btn-sm btn-info" id="btnNextDocumentUpload">Next</button>
+    </div>
+  </div>
+
+  <div class="tab-pane fade" id="guarantorDocs" role="tabpanel" aria-labelledby="guarantor-tab">
+    <table class="table align-middle" id="guarantorDocsTable">
+      <tbody>
+        <tr>
+          <td width="30%"><strong>Citizenship</strong></td>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <img class="img-thumbnail documentUploadPreview image-zoom" style="width: 200px;height: 200px;object-fit: contain;">
+              <div>
+                <input type="file" id="guarantorCitizenship" class="form-control form-control-sm mb-2 documentUploadImage">
+                <input type="hidden" id="guarantorCitizenshipHiddenFileName" name="guarantorCitizenshipHiddenFileName">
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td width="30%"><strong>Passport</strong></td>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <img class="img-thumbnail documentUploadPreview image-zoom"style="width: 200px;height: 200px;object-fit: contain;">
+              <div>
+                <input type="file" id="guarantorPassport" class="form-control form-control-sm mb-2 documentUploadImage">
+                <input type="hidden" id="guarantorPassportHiddenFileName" name="guarantorPassportHiddenFileName">
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="row justify-content-end mr-4 py-2">
+      <button type="button" class="btn btn-sm btn-danger mr-1" id="btnPreviousDocumentUpload">Previous</button>
+      <button type="button" class="btn btn-sm btn-success" id="btnSaveDocumentUpload">Save</button>
+    </div>
+  </div>
+
+</div>
+
+</form>
+{% endblock %}
+
+{% block javascript %}
+ 
+
+<script>
+  // document.getElementById("customerCitizenship").addEventListener("change", handleFileUpload);
+
+  $(".documentUploadImage").on("change", function(e) {
+    handleFileUpload(e,this);
+  });
+
+  function handleFileUpload(event,obj) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Preview
+    const preview = $(obj).closest('td').find('.documentUploadPreview');    
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      const base64Data = e.target.result;  
+
+      preview.attr('src', base64Data);
+
+      uploadFileToServer(base64Data, file.name,'documentUploadForm');
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function uploadFileToServer(base64Data, fileName,formId) {
+
+    var jsonData = {
+        "fileName": fileName,
+        "fileData": base64Data,
+        "leadId": $("#documentUploadHiddenLeadQuotationId").val()
+    };
+
+    $.ajax({
+       url: "/crm/documentUpload/upload",
+       headers:  {
+        "Content-Type": "application/json",
+        "X-CSRFToken": $('#'+formId).find('input[name="csrfmiddlewaretoken"]').val()
+      },
+      method: "POST",
+      data: JSON.stringify(jsonData),
+      contentType: "application/json",
+      success: function(data){
+          console.log(data);
+      }
+    })
+  
+  }
+
+
+  $('#btnSaveDocumentUpload').off('click').on('click', function(){
+    
+    var inputJson = {
+      "leadId": $('#documentUploadHiddenLeadQuotationId').val().trim()
+    }
+    
+    openConfirmSaveModal(JSON.stringify(inputJson), 'documentUploadForm', saveInsertUpdateData, "{% url 'document-upload-create' %}", "{% url 'document-approval-list' %}");
+
+  })
+
+  // function getCookie(name) {
+  //   let cookieValue = null;
+  //   if (document.cookie && document.cookie !== "") {
+  //     const cookies = document.cookie.split(";");
+  //     for (let i = 0; i < cookies.length; i++) {
+  //       const cookie = cookies[i].trim();
+  //       if (cookie.substring(0, name.length + 1) === (name + "=")) {
+  //         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+  //         break;
+  //       }
+  //     }
+  //   }
+  //   return cookieValue;
+  // }
+</script>
+
+{% endblock %}
