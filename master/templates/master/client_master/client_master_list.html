@@ -23,8 +23,17 @@
     </nav>
   </div>
   <div class="card-body">
+    <h5 class="mb-4">Client Master</h5>
     <table id="clientMasterTable" class="table table-bordered table-hover">
       <thead>
+        <tr>
+          <!-- <th>#</th> -->
+          <th>Name</th>
+          <th>Mobile Number</th>
+          <th>Permanent Address</th>
+          <th>Citizenship Number</th>
+          <th>Actions</th>
+        </tr>
       </thead>
       <tbody>
       </tbody>
@@ -33,9 +42,16 @@
 
 </div>
 
+{% endblock content %}
 
-
+{% block javascript %}
 <script>
+
+  $(document).ready(function () {
+    loadClientMasterList("{% url 'client-master-lists' %}");
+  })
+
+
   $(function () {
     $('#data-table').DataTable();
 
@@ -49,6 +65,40 @@
       $('#list-view').removeClass('d-none');
     });
   });
-</script>
 
-{% endblock content %}
+
+  function loadClientMasterList(requestUrl) {
+    $.ajax({
+      url: requestUrl,
+      method: "GET",
+      dataType: "json",
+      contentType: "application/json",
+      success: function (data) {
+        $('#clientMasterTable tbody').empty();
+
+        var data = data.datas;
+
+        data.forEach(function (item) {
+          var tr = `
+            <tr>
+              <td>${item.clientMasterFirstName} ${item.clientMasterLastName}</td>
+              <td>${item.clientMasterMobileNumber}</td>
+              <td>${item.clientMasterPermanentMunicipalityName}, ${item.clientMasterPermanentDistrictName}</td>
+              <td>${item.clientMasterCitizenshipNumber}</td>
+              <td>
+                <button type="button" class="btn btn-sm btn-info" onclick="showUpdatePage('/master/clientMaster/${item.referenceId}/update')"><i class="fas fa-edit"></i></button>
+              </td>
+            </tr>
+            
+            `;
+
+          $('#clientMasterTable tbody').append(tr);
+        });
+      },
+      error: function (jqXHR, textStatus, errorMessage) {
+        console.error('Error loading inquiry follow-up:', errorMessage);
+      }
+    });
+  }
+</script>
+{% endblock javascript %}

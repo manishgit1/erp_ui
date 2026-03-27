@@ -4,11 +4,13 @@ import requests
 from django.conf import settings
 import logging
 from django.http import JsonResponse
+from master.globalparamters import get_auth_headers
+from master.globalparamters import api_request
 API_URL = settings.API_URL
 import json
 import ast
 
-logger = logging.getLogger('django')
+logger = logging.getLogger('erp_ui')
 
 
 class ApprovedDocumentsListView(View):
@@ -20,15 +22,8 @@ class ApprovedDocumentsListView(View):
 class ApprovedDocumentsListDataView(View):
 
    def get(self,request, *args, **kwargs):
-      # data = json.loads(json.dumps(ast.literal_eval(request.GET.get('jsonData'))))
-      # headers = {
-      #           'Authorization': request.session.get('authdata'),
-      #           'Temp-Session-Id': request.session.get('temp_session_id')
-      # }
-      api_url = API_URL + '/crm/approvedDocuments/list'
-
-      response = requests.get(api_url, headers={})
-
+      # headers = get_auth_headers(request)
+      response = api_request(request,'GET','/crm/approvedDocuments/list',data=None)
       if response.status_code == 200:
          return JsonResponse(response.json(), status=200)
       else:
@@ -40,15 +35,12 @@ class DocumentApprovalApproveRejectDocumentsView(View):
    
     def post(self,request,*args,**kwargs):
       try:
-         headers = {
-               "Content-Type": request.META.get("CONTENT_TYPE", "application/json")
-         }
+         headers = get_auth_headers(request)
 
          response = requests.post(
                API_URL + '/crm/documentApproval/rejectApprove/create',
                data=request.body,
                headers=headers,
-               # timeout=30
          )
 
          if response.status_code == 200:

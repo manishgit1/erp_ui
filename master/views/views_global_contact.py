@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 import requests
 from django.conf import settings
+from master.globalparamters import get_auth_headers
 import json
 import ast
 
@@ -15,13 +16,7 @@ class GlobalContactCreateView(CreateView):
 
    def post(self,request,*args):
       try:
-
-         print('contact master create')
-         headers = {
-               "Content-Type": request.META.get("CONTENT_TYPE", "application/json")
-         }
-         # if "Authorization" in request.headers:
-         #       headers["Authorization"] = request.headers["Authorization"]
+         headers = get_auth_headers(request)
 
          response = requests.post(
                API_URL + '/master/contactMaster/create',
@@ -30,11 +25,7 @@ class GlobalContactCreateView(CreateView):
                timeout=30
          )
 
-         return JsonResponse({
-               "status": "success" if response.ok else "error",
-               "status_code": response.status_code,
-               "response": response.json() if "application/json" in response.headers.get("Content-Type", "") else response.text
-         }, status=response.status_code)
+         return JsonResponse(response.json() if "application/json" in response.headers.get("Content-Type", "") else response.text, status=response.status_code)
 
       except requests.exceptions.Timeout:
          return JsonResponse({"status": "error", "message": "API request timed out."}, status=504)
@@ -55,12 +46,7 @@ class GlobalContactListView(View):
 class GlobalContactListDataView(View):
 
    def get(self,request, *args, **kwargs):
-      # data = json.loads(json.dumps(ast.literal_eval(request.GET.get('jsonData'))))
-      # data = request.GET.get('jsonData')
-      headers = {
-               #  'Authorization': request.session.get('authdata'),
-               #  'Temp-Session-Id': request.session.get('temp_session_id')
-      }
+      headers = get_auth_headers(request)
 
       api_url = API_URL + '/master/contactMaster/list'
 
@@ -83,11 +69,7 @@ class GlobalContactEditView(View):
    
    def post(self,request,pk,format=None):
       try:
-
-         print('contact master edit')
-         headers = {
-               "Content-Type": request.META.get("CONTENT_TYPE", "application/json")
-         }
+         headers = get_auth_headers(request)
          
          request_url = API_URL + '/master/contactMaster/' + pk + '/edit'
 
@@ -98,11 +80,7 @@ class GlobalContactEditView(View):
                timeout=30
          )
 
-         return JsonResponse({
-               "status": "success" if response.ok else "error",
-               "status_code": response.status_code,
-               "response": response.json() if "application/json" in response.headers.get("Content-Type", "") else response.text
-         }, status=response.status_code)
+         return JsonResponse(response.json() if "application/json" in response.headers.get("Content-Type", "") else response.text, status=response.status_code)
 
       except requests.exceptions.Timeout:
          return JsonResponse({"status": "error", "message": "API request timed out."}, status=504)
@@ -120,12 +98,7 @@ class GlobalContactEditView(View):
 class GlobalContactDataByIdView(View):
 
    def get(self,request,pk,format=None):
-      # data = json.loads(json.dumps(ast.literal_eval(request.GET.get('jsonData'))))
-      # data = request.GET.get('jsonData')
-      headers = {
-               #  'Authorization': request.session.get('authdata'),
-               #  'Temp-Session-Id': request.session.get('temp_session_id')
-      }
+      headers = get_auth_headers(request)
 
       api_url = API_URL + '/master/contactMaster/'+ pk + '/findById'
 
@@ -142,10 +115,7 @@ class GetAddressByMunicipalityView(View):
    def get(self,request,format=None):
       data = json.loads(json.dumps(ast.literal_eval(request.GET.get('jsonData'))))
       # data = request.GET.get('jsonData')
-      headers = {
-               #  'Authorization': request.session.get('authdata'),
-               #  'Temp-Session-Id': request.session.get('temp_session_id')
-      }
+      headers = get_auth_headers(request)
 
       api_url = API_URL + '/master/vdcMunicipality/getAddressInfo/'
 

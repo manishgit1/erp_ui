@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+{% include 'loan/loan_request/loan_request.html' %}
+{% endblock %}
+
+
+{% block javascript %}
+<script src="{% static 'loan/js/loan_request.js' %}"></script>
+<script>
+    const LOAN_REQUEST_CREATE_URL = "{% url 'loan-request-create' %}";
+    const LOAN_REQUEST_LIST_URL = "{% url 'loan-request-list' %}";
+
+    $(document).ready(function () {
+
+        var data = "{{data|escapejs}}";
+
+        $.when(
+            loadSelectElementData("loanRequestType", "{% url 'loan-type-lists' %}", "setupType", "loanType"),
+            loadSelectElementData("loanRequestPurpose", "{% url 'client-type-lists' %}", "setupType", "loanPurposeCode"),
+            loadSelectElementData("loanRequestPaymentScheme", "{% url 'client-type-lists' %}", "setupType", "loanPaymentScheme")
+        ).done(function () {
+            if (data !== '' && data !== null && data !== undefined) {
+                loadLoanRequestData(data)
+            }
+        })
+
+        // Initialize Select2 if needed
+        // $('.select2').select2();
+
+        // Load dropdowns if any
+
+    });
+
+    function loadLoanRequestData(data) {
+        var clientData = JSON.parse(data);
+        var jsonData = {
+            'referenceId': clientData.leadId
+        };
+        $.ajax({
+            url: "/master/clientMaster/getLeadData/?jsonData=" + encodeURI(JSON.stringify(jsonData)),
+            method: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+
+                $('#loanRequestClientName').val(response.clientName);
+                $('#loanRequestClientCode').val(response.clientCode);
+                $('#loanRequestClientMobileNumber').val(response.clientMobileNumber);
+                $('#loanRequestCitizenshipNumber').val(response.clientCitizenshipNumber);
+                $('#loanRequestTenure').val(response.loanTenure);
+                $('#loanRequestInterestRate').val(response.loanInterestRate);
+                $('#loanRequestAmount').val(response.loanAmount);
+                $('#loanRequestType').val(response.loanType);
+                $('#loanRequestClientPermanentAddress').val(response.clientPermanentAddress);
+                $('#loanRequestClientTemporaryAddress').val(response.clientTemporaryAddress);
+            },
+            error: function (jqXHR, textStatus, errorMessage) {
+                console.error('Error loading client master data:', errorMessage);
+            }
+        });
+    }
+
+
+
+</script>
+{% endblock %}

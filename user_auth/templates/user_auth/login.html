@@ -4,117 +4,139 @@
 <!-- SweetAlert2 (For Success Messages) -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
 <!-- Toastr (For Error Messages) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
+<!-- CryptoJS (For Encryption) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
-<style>
-     .small-toast {
-    width: 300px !important;
-    font-size: 14px;
-    padding: 10px;
-}
-</style>
+
+
+
 <div class="container">
- <div class="row justify-content-center my-md-5 my-4">
-  <div class="login-box">
-   <!-- /.login-logo -->
-   <div class="card card-outline card-primary">
-     <!-- <div class="card-header text-center">
+  <div class="row justify-content-center my-md-5 my-4">
+    <div class="login-box">
+      <!-- /.login-logo -->
+      <div class="card card-outline card-primary">
+        <!-- <div class="card-header text-center">
        <a href="../../index2.html" class="h1"><b>Sign</b>In</a>
      </div> -->
-     <div class="card-body">
-       <p class="login-box-msg">Sign In</p>
-  
-       <form id="loginForm">
-        {% csrf_token %}
-         <div class="input-group mb-3">
-           <input type="text" id="username" class="form-control" placeholder="Username">
-           <!-- <div class="input-group-append">
+        <div class="card-body">
+          <p class="login-box-msg">Sign In</p>
+
+          <form id="loginForm">
+            {% csrf_token %}
+            <div class="input-group mb-3">
+              <input type="text" id="username" class="form-control" placeholder="Username">
+              <!-- <div class="input-group-append">
              <div class="input-group-text">
                <span class="fas fa-envelope"></span>
              </div>
            </div> -->
-         </div>
-         <div class="input-group mb-3">
-           <input type="password" id="password" class="form-control" placeholder="Password">
-           <!-- <div class="input-group-append">
+            </div>
+            <div class="input-group mb-3">
+              <input type="password" id="password" class="form-control" placeholder="Password">
+              <!-- <div class="input-group-append">
              <div class="input-group-text">
                <span class="fas fa-lock"></span>
              </div>
            </div> -->
-         </div>
-         <div class="row">
-           <!-- /.col -->
-           <div class="col-12">
-             <button type="button" id="login-btn" class="btn btn-primary btn-block">Sign In</button>
-           </div>
-           <!-- /.col -->
-         </div>
-       </form>
+            </div>
+            <div class="row">
+              <!-- /.col -->
+              <div class="col-12">
+                <button type="button" id="login-btn" class="btn btn-primary btn-block">Sign In</button>
+              </div>
+              <!-- /.col -->
+            </div>
+          </form>
 
-  
-     </div>
-     <!-- /.card-body -->
-   </div>
-   <!-- /.card -->
+
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+    </div>
+
   </div>
-  
- </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <script>
 
-     function convertToJsonForLoginData(){
-          var loginData = {}
-          loginData.username = $('#username').val();
-          loginData.password = $('#password').val();
-          return loginData;
-     }
+  function convertToJsonForLoginData() {
+    var loginData = {}
+    loginData.username = $('#username').val();
+    loginData.password = $('#password').val();
+    return loginData;
+  }
 
 
-     $('#login-btn').on('click', function(){
-    var loginJsonData = JSON.stringify(convertToJsonForLoginData());
+  function handleLogin() {
+    var rawData = convertToJsonForLoginData();
+    var jsonData = JSON.stringify(rawData);
+
+    // Encryption logic
+    var key = CryptoJS.enc.Utf8.parse('1234567890123456');
+    var iv = CryptoJS.lib.WordArray.random(16);
+    var encrypted = CryptoJS.AES.encrypt(jsonData, key, {
+      iv: iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+
+    // Combine IV and ciphertext: iv + ciphertext
+    var ivPlusCiphertext = iv.concat(encrypted.ciphertext);
+    var base64Payload = CryptoJS.enc.Base64.stringify(ivPlusCiphertext);
+
+    var loginJsonData = JSON.stringify({ "payload": base64Payload });
 
     $.ajax({
-        url: "{% url 'user-login-create' %}",
-        headers: {
-            'X-CSRFToken': $('#loginForm').find("input[name='csrfmiddlewaretoken']").val()
-        },
-        method: 'POST',
-        contentType: 'application/json',
-        data: loginJsonData,
-        success: function(data){
-            console.log("Login success:", data);
-
-            if (data.resultCode === "0") { // Success response
-                Swal.fire({
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Login Successful!',
-                    text: data.resultDescription,
-                    showConfirmButton: false,
-                    timer: 2000,
-                    customClass: {
-                      popup: 'small-toast'
-                    }
-                });
-                setTimeout(function(){
-                  console.log("jhghjg")
-                  window.location.href = "dashboard/";
-                },2000);
-            } else { // Handle other responses if needed
-                toastr.error("Unexpected response: " + data.resultDescription);
-            }
-
-        },
-        error: function(jqXHR, textStatus, errorMessage){
-            console.error("Login error:", errorMessage);
+      url: "{% url 'user-login-create' %}",
+      headers: {
+        'X-CSRFToken': $('#loginForm').find("input[name='csrfmiddlewaretoken']").val()
+      },
+      method: 'POST',
+      contentType: 'application/json',
+      data: loginJsonData,
+      success: function (data) {
+        if (data.resultCode === "0") {
+          toastr.success("Login Successful!");
+          setTimeout(function () {
+            window.location.href = "{% url 'dashboard' %}";
+          }, 2000);
+        } else {
+          toastr.error(data.resultDescription || data.detail || "Login Failed");
         }
+      },
+      error: function (jqXHR) {
+        var errorMessage = "An error occurred during login";
+        if (jqXHR.responseJSON && jqXHR.responseJSON.resultDescription) {
+          errorMessage = jqXHR.responseJSON.resultDescription;
+        } else if (jqXHR.responseJSON && jqXHR.responseJSON.detail) {
+          errorMessage = jqXHR.responseJSON.detail;
+        }
+        toastr.error(errorMessage);
+        console.error("Login error:", jqXHR);
+      }
     });
-});
+  }
+
+  $('#login-btn').on('click', function () {
+    handleLogin();
+  });
+
+  $('#username, #password').on('keypress', function (e) {
+    if (e.which == 13) { // Enter key
+      handleLogin();
+    }
+  });
 
 </script>

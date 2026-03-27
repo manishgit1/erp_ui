@@ -1,685 +1,437 @@
-<!-- <style>
-   .stepper {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      position: relative;
-   }
-
-   .stepper::before {
-      content: "";
-      position: absolute;
-      top: 20px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: #dee2e6;
-      z-index: 0;
-   }
-
-   .step {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      transition: transform 0.1s ease;
-   }
-
-   .step:active {
-      transform: scale(0.95);
-   }
-
-   .step .circle {
-      width: 40px;
-      height: 40px;
-      background: #e9ecef;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #495057;
-      margin-bottom: 5px;
-      transition: background 0.3s, color 0.3s;
-   }
-
-   .step.active .circle {
-      background: #0d6efd;
-      color: #fff;
-   }
-
-   .step:hover .circle {
-      background: #b0c4de;
-   }
-
-   .step span {
-      font-size: 0.9rem;
-      color: #495057;
-   }
-
-   .tab-content {
-      border: 1px solid #dee2e6;
-      border-radius: 5px;
-      padding: 20px;
-      background: #fff;
-   }
-
-   .form-section {
-      margin-bottom: 1rem;
-   }
-</style>
-
-
-<h5 class="mb-3">Client Registration</h5>
-<div class="stepper">
-   <div class="step active">
-      <div class="circle">1</div><span>Contact Information</span>
-   </div>
-   <div class="step">
-      <div class="circle">2</div><span>Preview</span>
-   </div>
-</div>
-
-<form id="contactMasterForm">
+<form id="clientMasterForm">
    {% csrf_token %}
-   <div class="tab-content">
-      <div class="tab-pane fade show active">
+   <div class="card shadow-sm rounded-3">
+      <div class="card-body">
+         <h5 class="mb-4">Client Registration</h5>
 
-         <div class="row">
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">First Name</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm" id="contactMasterFirstName"
-                        name="contactMasterFirstName">
-                  </div>
-               </div>
-            </div>
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Per. Municipality</label>
-                  <div class="col-md-8">
-                     <select id="contactMasterPermanentMunicipality" name="contactMasterPermanentMunicipality"
-                        class="form-control form-select-sm">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Middle Name</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm form-control-sm" id="contactMasterMiddleName"
-                        name="contactMasterMiddleName">
-                  </div>
-               </div>
-            </div>
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Per. District</label>
-                  <div class="col-md-8">
-                     <select id="contactMasterPermanentDistrict" name="contactMasterPermanentDistrict"
-                        class="form-control form-select-sm">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
+         <!-- Nav tabs -->
+         <ul class="nav nav-tabs" id="clientTabs" role="tablist">
+            <li class="nav-item">
+               <a href="#clientMasterPersonalInfo" class="nav-link active" role="tab" data-toggle="tab">Personal
+                  Info</a>
+            </li>
+            <li class="nav-item">
+               <a href="#clientMasterAddress" class="nav-link" role="tab" data-toggle="tab">Address Info</a>
+            </li>
+            <li class="nav-item">
+               <a href="#business" class="nav-link" role="tab" data-toggle="tab">Business Info</a>
+            </li>
+            <li class="nav-item">
+               <a href="#photo" class="nav-link" role="tab" data-toggle="tab">Photo Upload</a>
+            </li>
+         </ul>
 
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Last Name</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm" id="contactMasterLastName"
-                        name="contactMasterLastName">
-                  </div>
-               </div>
-            </div>
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Per. Province</label>
-                  <div class="col-md-8">
-                     <select id="contactMasterPermanentProvince" name="contactMasterPermanentProvince"
-                        class="form-control form-select-sm">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Mobile Number</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm" id="contactMasterMobileNumber"
-                        name="contactMasterMobileNumber">
-                  </div>
-               </div>
-            </div>
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Per. Ward No.</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm" id="contactMasterPermanentWardNo"
-                        name="contactMasterPermanentWardNo">
-                     </select>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Phone Number</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm" id="contactMasterPhoneNumber"
-                        name="contactMasterPhoneNumber">
-                  </div>
-               </div>
-            </div>
+         <!-- Tab panes -->
+         <div class="tab-content pt-3">
 
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Citizenship Number</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm" id="contactMasterCitizenshipNumber"
-                        name="contactMasterCitizenshipNumber">
-                     </select>
-                  </div>
-               </div>
-            </div>
-            
-         </div>
-         <div class="row">
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Email</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm" id="contactMasterEmail"
-                        name="contactMasterEmail">
-                  </div>
-               </div>
-            </div>
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Citizenship Issued District</label>
-                  <div class="col-md-8">
-                     <select class="form-control form-select-sm" id="contactMasterCitizenshipIssuedDistrict"
-                        name="contactMasterCitizenshipIssuedDistrict">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Citizenship Issued Date</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm" id="contactMasterCitizenshipIssuedDate"
-                        name="contactMasterCitizenshipIssuedDate">
-                     </select>
-                  </div>
-               </div>
-            </div>
-            
-         </div>
-         <button type="button" class="btn btn-primary next-btn">Next</button>
-      </div>
-
-      <div class="tab-pane fade">
-
-         <div id="customerPreview" class="mb-4 border rounded p-3 bg-light">
-        </div>
-       
-         <button type="button" class="btn btn-secondary prev-btn">Previous</button>
-         <button type="button" class="btn btn-success" id="btnSaveContactMaster" >Save</button>
-      </div>
-
-    
-   </div>
- </form> -->
-
-<div class="card shadow-sm rounded-3">
-   <div class="card-body">
-      <h5 class="mb-4">Client Registration</h5>
-
-      <!-- Nav tabs -->
-      <ul class="nav nav-tabs" id="clientTabs" role="tablist">
-         <li class="nav-item">
-            <a href="#clientMasterPersonalInfo" class="nav-link active" role="tab" data-toggle="tab">Personal Info</a>
-         </li>
-         <li class="nav-item">
-            <a href="#clientMasterAddress" class="nav-link" role="tab" data-toggle="tab">Address Info</a>
-         </li>
-         <li class="nav-item">
-            <a href="#business" class="nav-link" role="tab" data-toggle="tab">Business Info</a>
-         </li>
-         <li class="nav-item">
-            <a href="#photo" class="nav-link" role="tab" data-toggle="tab">Photo Upload</a>
-         </li>
-         <!-- <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#personal">Personal Info</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#address">Address Info</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#business">Business Info</button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#photo">Photo Upload</button></li> -->
-      </ul>
-
-      <!-- Tab panes -->
-      <div class="tab-content pt-3">
-
-         <!-- Personal Info -->
-         <div class="tab-pane fade show active" id="clientMasterPersonalInfo">
-            <div class="row">
-               <!-- <div class="col-md-6">
-               <div class="form-group row">
-                  <label class="form-label col-md-4">Client Code</label>
-                  <input type="text" class="form-control form-control-sm col-md-8">
-               </div>
-            </div> -->
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterValueDate" class="form-label col-md-4">Value Date (AD)</label>
-                     <input type="date" id="clientMasterValueDate" name="clientMasterValueDate"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterSalutation" class="form-label col-md-4">Salutation</label>
-                     <select name="clientMasterSalutation" id="clientMasterSalutation"
-                        class="form-control form-control-sm select2 col-md-8">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterFirstName" class="form-label col-md-4">First Name</label>
-                     <input type="text" id="clientMasterFirstName" name="clientMasterFirstName"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterNationality" class="form-label col-md-4">Nationality</label>
-                     <select name="clientMasterNationality" id="clientMasterNationality"
-                        class="form-control form-control-sm select2 col-md-8">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-
-            </div>
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterMiddleName" class="form-label col-md-4">Middle Name</label>
-                     <input type="text" id="clientMasterMiddleName" name="clientMasterMiddleName"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterGender" class="form-label col-md-4">Gender</label>
-                     <select name="clientMasterGender" id="clientMasterGender"
-                        class="form-control form-control-sm select2 col-md-8">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-
-            </div>
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label class="form-label col-md-4">Last Name</label>
-                     <input type="text" id="clientMasterLastName" name="clientMasterLastName"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label class="form-label col-md-4">Date of Birth (AD)</label>
-                     <input type="date" id="clientMasterDateOfBirth" name="clientMasterDateOfBirth"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-            </div>
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label class="form-label col-md-4">Contact Number</label>
-                     <input type="text" id="clientMasterContactNumber" name="clientMasterContactNumber"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label class="form-label col-md-4">Phone Number</label>
-                     <input type="text" id="clientMasterPhoneNumber" name="clientMasterPhoneNumber"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-            </div>
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterCitizenshipNumber" class="form-label col-md-4">Citizenship Number</label>
-                     <input type="text" id="clientMasterCitizenshipNumber" name="clientMasterCitizenshipNumber"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterCitizenshipIssuedDistrict" class="form-label col-md-4">Citizenship Issued
-                        District</label>
-                     <select name="clientMasterCitizenshipIssuedDistrict" id="clientMasterCitizenshipIssuedDistrict"
-                        class="form-control form-control-sm select2 col-md-8">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label class="form-label col-md-4">Citizenship Issued Date (AD)</label>
-                     <input type="date" id="clientMasterCitizenshipIssuedDate" name="clientMasterCitizenshipIssuedDate"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterEducation" class="form-label col-md-4">Education</label>
-                     <input type="text" id="clientMasterEducation" name="clientMasterEducation"
-                        class="form-control form-control-sm col-md-8" placeholder="Press Space" readonly>
-
-                  </div>
-               </div>
-            </div>
-
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label class="form-label col-md-4">Identity Type</label>
-                     <input type="text" id="clientMasterIdentityType" name="clientMasterIdentityType"
-                        class="form-control form-control-sm col-md-8" placeholder="Press Space" readonly>
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterIdentityIssuedDistrict" class="form-label col-md-4">Identity Issued
-                        District</label>
-                     <select name="clientMasterIdentityIssuedDistrict" id="clientMasterIdentityIssuedDistrict"
-                        class="form-control form-control-sm select2 col-md-8">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label class="form-label col-md-4">Identity Issued Date (AD)</label>
-                     <input type="date" id="clientMasterIdentityIssuedDate"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterClientNature" class="form-label col-md-4">Client Nature</label>
-                     <input type="text" id="clientMasterClientNature" name="clientMasterClientNature"
-                        class="form-control form-control-sm col-md-8" placeholder="Press Space" readonly>
-
-                  </div>
-               </div>
-            </div>
-
-
-            <div class="row justify-content-end">
-                  <button type="button" class="btn btn-sm btn-success px-3 mr-2">Next</button>
-            </div>
-         </div>
-
-         <div class="tab-pane fade" id="clientMasterAddress">
-
-            <!-- permanent address -->
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterPermanentMunicipality" class="form-label col-md-4">Permanent
-                        Municipality</label>
-                     <div class="col-md-8">
-                        <select name="clientMasterPermanentMunicipality" id="clientMasterPermanentMunicipality"
-                           class="form-control form-control-sm">
-                           <option value="">SELECT</option>
-                        </select>
+            <!-- Personal Info -->
+            <div class="tab-pane fade show active" id="clientMasterPersonalInfo">
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterValueDate" class="form-label col-md-4">Value Date (AD)</label>
+                        <input type="date" id="clientMasterValueDate" name="clientMasterValueDate"
+                           class="form-control form-control-sm col-md-8" value="<?= date('Y-m-d') ?>">
                      </div>
-
                   </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterPermanentDistrict" class="form-label col-md-4">Permanent District</label>
-                     <div class="col-md-8">
-                        <select name="clientMasterPermanentDistrict" id="clientMasterPermanentDistrict"
-                           class="form-control form-control-sm">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterSalutation" class="form-label col-md-4">Salutation</label>
+                        <select name="clientMasterSalutation" id="clientMasterSalutation"
+                           class="form-control form-control-sm select2 col-md-8">
                            <option value="">SELECT</option>
                         </select>
                      </div>
                   </div>
                </div>
-            </div>
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterPermanentProvince" class="form-label col-md-4">Permanent
-                        Province</label>
-                     <div class="col-md-8">
-                        <select name="clientMasterPermanentProvince" id="clientMasterPermanentProvince"
-                           class="form-control form-control-sm">
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterFirstName" class="form-label col-md-4">First Name <span
+                              class="text-danger">*</span></label>
+                        <input type="text" id="clientMasterFirstName" name="clientMasterFirstName"
+                           class="form-control form-control-sm col-md-8" required>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterNationality" class="form-label col-md-4">Nationality</label>
+                        <select name="clientMasterNationality" id="clientMasterNationality"
+                           class="form-control form-control-sm select2 col-md-8">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+                  </div>
+
+               </div>
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterMiddleName" class="form-label col-md-4">Middle Name</label>
+                        <input type="text" id="clientMasterMiddleName" name="clientMasterMiddleName"
+                           class="form-control form-control-sm col-md-8">
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterGender" class="form-label col-md-4">Gender</label>
+                        <select name="clientMasterGender" id="clientMasterGender"
+                           class="form-control form-control-sm select2 col-md-8">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+                  </div>
+
+               </div>
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label class="form-label col-md-4">Last Name <span class="text-danger">*</span></label>
+                        <input type="text" id="clientMasterLastName" name="clientMasterLastName"
+                           class="form-control form-control-sm col-md-8" required>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label class="form-label col-md-4">Date of Birth (AD) <span class="text-danger">*</span></label>
+                        <input type="date" id="clientMasterDateOfBirth" name="clientMasterDateOfBirth"
+                           class="form-control form-control-sm col-md-8" required>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label class="form-label col-md-4">Mobile Number <span class="text-danger">*</span></label>
+                        <input type="text" id="clientMasterMobileNumber" name="clientMasterMobileNumber"
+                           class="form-control form-control-sm col-md-8" required>
+                     </div>
+                  </div>
+
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label class="form-label col-md-4">Contact Number <span class="text-danger">*</span></label>
+                        <input type="text" id="clientMasterContactNumber" name="clientMasterContactNumber"
+                           class="form-control form-control-sm col-md-8" required>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterCitizenshipNumber" class="form-label col-md-4">Citizenship Number <span
+                              class="text-danger">*</span></label>
+                        <input type="text" id="clientMasterCitizenshipNumber" name="clientMasterCitizenshipNumber"
+                           class="form-control form-control-sm col-md-8" required>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterCitizenshipIssuedDistrict" class="form-label col-md-4">Citizenship
+                           Issued
+                           District <span class="text-danger">*</span></label>
+                        <select name="clientMasterCitizenshipIssuedDistrict" id="clientMasterCitizenshipIssuedDistrict"
+                           class="form-control form-control-sm select2 col-md-8" required>
                            <option value="">SELECT</option>
                         </select>
                      </div>
                   </div>
                </div>
-               <div class="col-md-6">
-                  <div class="row">
-                     <div class="col-md-6">
-                        <div class="form-group row">
-                           <label class="form-label col-md-4">Per. Ward No</label>
-                           <input type="text" id="clientMasterPermanentWardNo" name="clientMasterPermanentWardNo"
-                              class="form-control form-control-sm col-md-8">
+
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label class="form-label col-md-4">Citizenship Issued Date (AD) <span
+                              class="text-danger">*</span></label>
+                        <input type="date" id="clientMasterCitizenshipIssuedDate"
+                           name="clientMasterCitizenshipIssuedDate" class="form-control form-control-sm col-md-8"
+                           required>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterEducation" class="form-label col-md-4">Education <span
+                              class="text-danger">*</span></label>
+                        <input type="text" id="clientMasterEducation" name="clientMasterEducation"
+                           class="form-control form-control-sm col-md-8" placeholder="Press Space" readonly required>
+
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label class="form-label col-md-4">Identity Type</label>
+                        <input type="text" id="clientMasterIdentityType" name="clientMasterIdentityType"
+                           class="form-control form-control-sm col-md-8" placeholder="Press Space" readonly>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterIdentityIssuedDistrict" class="form-label col-md-4">Identity Issued
+                           District</label>
+                        <select name="clientMasterIdentityIssuedDistrict" id="clientMasterIdentityIssuedDistrict"
+                           class="form-control form-control-sm select2 col-md-8">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label class="form-label col-md-4">Identity Issued Date (AD)</label>
+                        <input type="date" id="clientMasterIdentityIssuedDate"
+                           class="form-control form-control-sm col-md-8">
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterClientNature" class="form-label col-md-4">Client Nature</label>
+                        <input type="text" id="clientMasterClientNature" name="clientMasterClientNature"
+                           class="form-control form-control-sm col-md-8" placeholder="Press Space" readonly>
+
+                     </div>
+                  </div>
+               </div>
+
+
+               <div class="row justify-content-end">
+                  <button type="button" class="btn btn-sm btn-success px-3 mr-2 client-master-next-btn">Next</button>
+               </div>
+            </div>
+
+            <div class="tab-pane fade" id="clientMasterAddress">
+
+               <!-- permanent address -->
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterPermanentMunicipality" class="form-label col-md-4">Permanent
+                           Municipality</label>
+                        <div class="col-md-8">
+                           <select name="clientMasterPermanentMunicipality" id="clientMasterPermanentMunicipality"
+                              class="form-control form-control-sm">
+                              <option value="">SELECT</option>
+                           </select>
+                        </div>
+
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterPermanentDistrict" class="form-label col-md-4">Permanent
+                           District</label>
+                        <div class="col-md-8">
+                           <select name="clientMasterPermanentDistrict" id="clientMasterPermanentDistrict"
+                              class="form-control form-control-sm">
+                              <option value="">SELECT</option>
+                           </select>
                         </div>
                      </div>
-                     <div class="col-md-6">
-                        <div class="form-group row">
-                           <label class="form-label col-md-4">Per. Street</label>
-                           <input type="text" id="clientMasterPermanentStreet" name="clientMasterPermanentStreet"
-                              class="form-control form-control-sm col-md-8">
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterPermanentProvince" class="form-label col-md-4">Permanent
+                           Province</label>
+                        <div class="col-md-8">
+                           <select name="clientMasterPermanentProvince" id="clientMasterPermanentProvince"
+                              class="form-control form-control-sm">
+                              <option value="">SELECT</option>
+                           </select>
                         </div>
                      </div>
-
                   </div>
-               </div>
-            </div>
-
-            <div class="row mt-2 mb-3">
-               <div class="col-md-12">
-                  <label for="clientMasterIsTemporaryAddressSameAsPermanentAddress" class="form-label">Are Permanent And
-                     Temporary Address Same?</label>
-                  <input type="checkbox" name="clientMasterIsTemporaryAddressSameAsPermanentAddress"
-                     id="clientMasterIsTemporaryAddressSameAsPermanentAddress">
-               </div>
-
-            </div>
-
-
-            <!-- temporary address -->
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterPermanentMunicipality" class="form-label col-md-4">Temporary
-                        Municipality</label>
-                     <select name="clientMasterTemporaryMunicipality" id="clientMasterTemporaryMunicipality"
-                        class="form-control form-control-sm select2 col-md-8">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterTemporaryDistrict" class="form-label col-md-4">Temporary District</label>
-                     <select name="clientMasterTemporaryDistrict" id="clientMasterTemporaryDistrict"
-                        class="form-control form-control-sm select2 col-md-8">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-            </div>
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterTemporaryMunicipality" class="form-label col-md-4">Temporary
-                        Province</label>
-                     <select name="clientMasterTemporaryMunicipality" id="clientMasterTemporaryMunicipality"
-                        class="form-control form-control-sm select2 col-md-8">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="row">
-                     <div class="col-md-6">
-                        <div class="form-group row">
-                           <label class="form-label col-md-4">Per. Ward No</label>
-                           <input type="text" id="clientMasterTemporaryWardNo" name="clientMasterTemporaryWardNo"
-                              class="form-control form-control-sm col-md-8">
+                  <div class="col-md-6">
+                     <div class="row">
+                        <div class="col-md-6">
+                           <div class="form-group row">
+                              <label class="form-label col-md-4">Per. Ward No</label>
+                              <input type="text" id="clientMasterPermanentWardNo" name="clientMasterPermanentWardNo"
+                                 class="form-control form-control-sm col-md-8">
+                           </div>
                         </div>
-                     </div>
-                     <div class="col-md-6">
-                        <div class="form-group row">
-                           <label class="form-label col-md-4">Per. Street</label>
-                           <input type="text" id="clientMasterTemporaryStreet" name="clientMasterTemporaryStreet"
-                              class="form-control form-control-sm col-md-8">
+                        <div class="col-md-6">
+                           <div class="form-group row">
+                              <label class="form-label col-md-4">Per. Street</label>
+                              <input type="text" id="clientMasterPermanentStreet" name="clientMasterPermanentStreet"
+                                 class="form-control form-control-sm col-md-8">
+                           </div>
                         </div>
+
                      </div>
-
                   </div>
+               </div>
+
+               <div class="row mt-2 mb-3">
+                  <div class="col-md-12">
+                     <label for="clientMasterIsTemporaryAddressSameAsPermanentAddress" class="form-label">Are Permanent
+                        And
+                        Temporary Address Same?</label>
+                     <input type="checkbox" name="clientMasterIsTemporaryAddressSameAsPermanentAddress"
+                        id="clientMasterIsTemporaryAddressSameAsPermanentAddress">
+                  </div>
+
+               </div>
+
+
+               <!-- temporary address -->
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterPermanentMunicipality" class="form-label col-md-4">Temporary
+                           Municipality</label>
+                        <select name="clientMasterTemporaryMunicipality" id="clientMasterTemporaryMunicipality"
+                           class="form-control form-control-sm select2 col-md-8">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterTemporaryDistrict" class="form-label col-md-4">Temporary
+                           District</label>
+                        <select name="clientMasterTemporaryDistrict" id="clientMasterTemporaryDistrict"
+                           class="form-control form-control-sm select2 col-md-8">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterTemporaryProvince" class="form-label col-md-4">Temporary
+                           Province</label>
+                        <select name="clientMasterTemporaryProvince" id="clientMasterTemporaryProvince"
+                           class="form-control form-control-sm select2 col-md-8">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="row">
+                        <div class="col-md-6">
+                           <div class="form-group row">
+                              <label class="form-label col-md-4">Temp. Ward No</label>
+                              <input type="text" id="clientMasterTemporaryWardNo" name="clientMasterTemporaryWardNo"
+                                 class="form-control form-control-sm col-md-8">
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                           <div class="form-group row">
+                              <label class="form-label col-md-4">Temp. Street</label>
+                              <input type="text" id="clientMasterTemporaryStreet" name="clientMasterTemporaryStreet"
+                                 class="form-control form-control-sm col-md-8">
+                           </div>
+                        </div>
+
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row justify-content-end">
+                  <button type="button" class="btn btn-sm btn-success px-3 mr-2 client-master-next-btn">Next</button>
+                  <button type="button" class="btn btn-sm btn-warning px-3 client-master-prev-btn">Previous</button>
+               </div>
+
+            </div>
+
+            <!-- Business Info -->
+            <div class="tab-pane fade" id="business">
+
+               <div class="row mb-2">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterBusinessName" class="form-label col-md-4">Business Name</label>
+                        <input type="text" id="clientMasterBusinessName" name="clientMasterBusinessName"
+                           class="form-control form-control-sm col-md-8">
+
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterOrganization" class="form-label col-md-4">Organization</label>
+                        <input type="text" id="clientMasterOrganization" name="clientMasterOrganization"
+                           class="form-control form-control-sm col-md-8">
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row mb-2">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterCompanyRegistrationDate" class="form-label col-md-4">Company
+                           Registration
+                           Date</label>
+                        <input type="date" id="clientMasterCompanyRegistrationDate"
+                           name="clientMasterCompanyRegistrationDate" class="form-control form-control-sm col-md-8">
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterCompanyRegistrationNumber" class="form-label col-md-4">Registration
+                           Number</label>
+                        <input type="text" id="clientMasterCompanyRegistrationNumber"
+                           name="clientMasterCompanyRegistrationNumber" class="form-control form-control-sm col-md-8">
+                     </div>
+                  </div>
+               </div>
+               <div class="row mb-2">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterPanNumber" class="form-label col-md-4">PAN Number</label>
+                        <input type="text" id="clientMasterPanNumber" name="clientMasterPanNumber"
+                           class="form-control form-control-sm col-md-8">
+                     </div>
+                  </div>
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterVatNumber" class="form-label col-md-4">VAT Number</label>
+                        <input type="text" id="clientMasterVatNumber" name="clientMasterVatNumber"
+                           class="form-control form-control-sm col-md-8">
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row">
+                  <div class="col-md-6">
+                     <div class="form-group row">
+                        <label for="clientMasterCompanyRegistrationAuthority" class="form-label col-md-4">Company
+                           Registration Authority</label>
+                        <select name="clientMasterCompanyRegistrationAuthority"
+                           id="clientMasterCompanyRegistrationAuthority"
+                           class="form-control form-control-sm select2 col-md-8">
+                           <option value="">SELECT</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="row justify-content-end">
+                  <button type="button" class="btn btn-sm btn-success px-3 mr-2 client-master-next-btn">Next</button>
+                  <button type="button" class="btn btn-sm btn-warning px-3 client-master-prev-btn">Previous</button>
                </div>
             </div>
 
-            <div class="row justify-content-end">
-                  <button type="button" class="btn btn-sm btn-success px-3 mr-2">Next</button>
-                  <button type="button" class="btn btn-sm btn-warning px-3">Previous</button>
-            </div>
-
-         </div>
-
-         <!-- Business Info -->
-         <div class="tab-pane fade" id="business">
-
-            <div class="row mb-2">
-                <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterBusinessName" class="form-label col-md-4">Business Name</label>
-                     <input type="text" id="clientMasterBusinessName" name="clientMasterBusinessName"
-                        class="form-control form-control-sm col-md-8">
-
-                  </div>
+            <!-- Photo Upload -->
+            <div class="tab-pane fade" id="photo">
+               <div class="mb-3">
+                  <label class="form-label">Upload Photo</label>
+                  <input type="file" class="form-control">
                </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterOrganization" class="form-label col-md-4">Organization</label>
-                     <input type="text" id="clientMasterOrganization" name="clientMasterOrganization"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-            </div>
 
-            <div class="row mb-2">
-                <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterCompanyRegistrationDate" class="form-label col-md-4">Company Registration Date</label>
-                     <input type="date" id="clientMasterCompanyRegistrationDate" name="clientMasterCompanyRegistrationDate"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterCompanyRegistrationNumber" class="form-label col-md-4">Registration Number</label>
-                     <input type="text" id="clientMasterCompanyRegistrationNumber" name="clientMasterCompanyRegistrationNumber"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterPanNumber" class="form-label col-md-4">PAN Number</label>
-                     <input type="text" id="clientMasterPanNumber" name="clientMasterPanNumber"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterVatNumber" class="form-label col-md-4">VAT Number</label>
-                     <input type="text" id="clientMasterVatNumber" name="clientMasterVatNumber"
-                        class="form-control form-control-sm col-md-8">
-                  </div>
-               </div>
-            </div>
-
-            <div class="row">
-               <div class="col-md-6">
-                  <div class="form-group row">
-                     <label for="clientMasterCompanyRegistrationAuthority" class="form-label col-md-4">Company Registration Authority</label>
-                     <select name="clientMasterCompanyRegistrationAuthority" id="clientMasterCompanyRegistrationAuthority"
-                        class="form-control form-control-sm select2 col-md-8">
-                        <option value="">SELECT</option>
-                     </select>
-                  </div>
-               </div>
-            </div>          
-               <!-- <div class="col-md-6">
-                  <label class="form-label">Occupation</label>
-                  <input type="text" class="form-control form-control-sm">
-               </div> -->
-
-            <div class="row justify-content-end">
-                  <button type="button" class="btn btn-sm btn-success px-3 mr-2">Next</button>
-                  <button type="button" class="btn btn-sm btn-warning px-3">Previous</button>
-            </div>
-         </div>
-
-         <!-- Photo Upload -->
-         <div class="tab-pane fade" id="photo">
-            <div class="mb-3">
-               <label class="form-label">Upload Photo</label>
-               <input type="file" class="form-control">
-            </div>
-
-            <div class="row justify-content-end">
+               <div class="row justify-content-end">
                   <button id="btnSaveClientMaster" type="button" class="btn btn-sm btn-primary px-3 mr-2">Save</button>
+               </div>
             </div>
+
          </div>
 
-      </div>
 
-     
+      </div>
    </div>
-</div>
+</form>

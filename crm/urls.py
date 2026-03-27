@@ -5,6 +5,7 @@ urlpatterns = [
    path('leadQuotation/create', views.LeadQuotationCreateView.as_view(), name='lead-quotation-create'),
    path('leadQuotation/list', views.LeadQuotationListView.as_view(), name='lead-quotation-list'),
    path('leadQuotation/lists', views.LeadQuotationListDataView.as_view(), name='lead-quotation-lists'),
+   path('leadQuotation/emiSchedule', views.LeadQuotationEMIScheduleView.as_view(), name='lead-quotation-emi-schedule'),
 
    path('inquiryFollowUp/list', views.InquiryFollowUpListView.as_view(), name='inquiry-follow-up-list'),
    path('inquiryFollowUp/lists', views.InquiryFollowUpListDataView.as_view(), name='inquiry-follow-up-lists'),

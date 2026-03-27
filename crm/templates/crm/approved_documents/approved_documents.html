@@ -1,40 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% include 'modal/proceed_loan_request.html' %}
 <div class="container-fluid mt-2">
- <div class="row">
-  <div class="col-md-12">
-   <!-- Card -->
-   <div class="card shadow-sm">
-    <div class="card-header bg-info text-white">
-     <h5 class="mb-0">Approved Documents</h5>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Approved Documents</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped" id="approvedDocumentsTable">
+                            <thead class="table-dark table-sm">
+                                <tr>
+                                    <!-- <th>S></th> -->
+                                    <th>Customer Name</th>
+                                    <th>Mobile Number</th>
+                                    <th>Permanent Address</th>
+                                    <th>Loan Amount</th>
+                                    <th>Actions</th>
+                                    <!-- <th>Requested By</th> -->
+                                    <!-- <th>Status</th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rows will be dynamically appended here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- /Card -->
+        </div>
     </div>
-    <div class="card-body">
-     <!-- Table -->
-     <div class="table-responsive">
-      <table class="table table-bordered table-striped" id="approvedDocumentsTable">
-       <thead class="table-dark table-sm">
-        <tr>
-         <!-- <th>S></th> -->
-         <th>Customer Name</th>
-         <th>Mobile Number</th>
-         <th>Permanent Address</th>
-         <th>Loan Amount</th>
-         <th>Actions</th>
-         <!-- <th>Requested By</th> -->
-         <!-- <th>Status</th> -->
-        </tr>
-       </thead>
-       <tbody>
-        <!-- Rows will be dynamically appended here -->
-       </tbody>
-      </table>
-     </div>
-    </div>
-   </div>
-   <!-- /Card -->
-  </div>
- </div>
 </div>
 
 {% endblock %}
@@ -42,61 +43,59 @@
 {% block javascript %}
 <script>
 
- // Call function on page load
- $(document).ready(function () {
-  loadApprovedDocumentsData("{% url 'approved-document-lists' %}");
- });
+    // Call function on page load
+    $(document).ready(function () {
+        loadApprovedDocumentsData("{% url 'approved-document-lists' %}");
+    });
 
 
- function loadApprovedDocumentsData(requestUrl) {
-  $.ajax({
-   url: requestUrl,
-   method: "GET",
-   dataType: "json",
-   contentType: "application/json",
-   success: function (response) {
-    console.log(response);
+    function loadApprovedDocumentsData(requestUrl) {
+        $.ajax({
+            url: requestUrl,
+            method: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+                $('#inquiryFollowUpTable tbody').empty();
 
-    $('#inquiryFollowUpTable tbody').empty();
+                var data = response.datas;
 
-    var data = response.datas;
-
-    data.forEach(function (item) {
-     var tr = `
+                data.forEach(function (item) {
+                    var tr = `
             <tr>
                 <td>${item.customerName || ''}</td>
                 <td>${item.mobileNumber || ''}</td>
                 <td>${item.permanentAddress || ''}</td>
-                <td>${item.loanAmount || ''}</td>
-                <td><button type="button" class="btn btn-sm btn-warning" onclick="checkIfClientMasterExists(${item.mobileNumber})">KYC</button></td>
+                <td>${formatCurrency(item.loanAmount) || ''}</td>
+                <td><button type="button" class="btn btn-sm btn-warning" onclick="checkIfClientMasterExists('${item.mobileNumber}','${item.referenceId}')">KYC</button></td>
             </tr>`;
 
-     $('#approvedDocumentsTable tbody').append(tr);
-    });
-   },
-   error: function (jqXHR, textStatus, errorMessage) {
-    console.error('Error loading inquiry follow-up:', errorMessage);
-   }
-  });
- }
+                    $('#approvedDocumentsTable tbody').append(tr);
+                });
+            },
+            error: function (jqXHR, textStatus, errorMessage) {
+                console.error('Error loading inquiry follow-up:', errorMessage);
+            }
+        });
+    }
 
 
- function showPrintModal(referenceId) {
-  $('#printModal').modal('show');
+    function showPrintModal(referenceId) {
+        $('#printModal').modal('show');
 
-  var jsonData = {
-   "leadId": referenceId
-  }
-  $.ajax({
-   url: "/crm/printModalSearch/search?jsonData=" + JSON.stringify(jsonData),  
-   method: 'GET',
-   dataType: 'json',
-   success: function (data) {
-    console.log(data)
-    var customerData = data.customerJson;
-    var documentData = data.documentJson;
+        var jsonData = {
+            "leadId": referenceId
+        }
+        $.ajax({
+            url: "/crm/printModalSearch/search?jsonData=" + JSON.stringify(jsonData),
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log(data)
+                var customerData = data.customerJson;
+                var documentData = data.documentJson;
 
-    var tr = `
+                var tr = `
         
          <tr>
               <th style="width: 20%">Customer Name</th>
@@ -108,128 +107,158 @@
               <th>Address</th>
               <td>${customerData.address}</td>
               <th>Amount</th>
-              <td>${customerData.amount}</td>
+              <td>${formatCurrency(customerData.amount)}</td>
             </tr>
         
         `
 
-    $('#documentPrintCustomerTable tbody').append(tr);
+                $('#documentPrintCustomerTable tbody').append(tr);
 
-    var imageContainer = $('#documentImagesContainer');
-    imageContainer.empty();
-    if (documentData && documentData.length > 0) {
-     documentData.forEach(function (doc) {
-      var section = $(`
+                var imageContainer = $('#documentImagesContainer');
+                imageContainer.empty();
+                if (documentData && documentData.length > 0) {
+                    documentData.forEach(function (doc) {
+                        var section = $(`
                 <div class="mb-4">
                     <img src="${doc.imageValue}" 
                          class="img-fluid border mb-2" 
                          style="max-height:400px;">
                 </div>
             `);
-      imageContainer.append(section);
-     });
-    } else {
-     imageContainer.append('<p class="text-center text-muted">No documents available</p>');
-    }
-   },
-   error: function (xhr, status, error) {
-    console.error("Error fetching data:", error);
-   }
-  });
- }
-
- // Example usage: showPrintModal(123);
-
-
- // <td>
- //                   <button class="btn btn-sm btn-success mx-1" type="button" onclick="showConfirmModalForInquiryFollowUp('QUOTATION',openDocumentsUploadForInquiryFollowUp, '${item.referenceId}')">
- //                   <i class="fa-solid fa-file"></i>
- //                   </button>
- //                   <button class="btn btn-sm btn-danger mx-1" type="button" onclick="showLeadFollowUpModal('${item.referenceId}')">
- //                   <i class="fa-solid fa-trash-can"></i>
- //                   </button>
- //               </td>
-
-
-function showDocumentApproveRejectModal(leadId) {
-    $('#leadId').val(leadId);
-
-    $('#docAction').val('');
-    $('#docRemarks').val('');
-
-    $('#approveRejectModal').modal('show');
-}
-
-$('#approveRejectOkBtn').off('click').on('click', function() {
-    var leadId = $('#leadId').val();
-    var action = $('#docAction').val();
-    var remarks = $('#docRemarks').val();
-
-    if (!action) {
-
-        toastrErrorMessage("Please select an action!")
-        return;
-    }
-
-    toastr
-
-    var jsonData = {
-        leadId: leadId,
-        action: action,
-        remarks: remarks
-    }
-
-    $.ajax({
-        url: '{% url "document-approval-reject-approve" %}',  
-        headers: {
-         'X-CSRFToken': $('#approveRejectForm').find('input[name="csrfmiddlewaretoken"]').val()
-        },
-        method: 'POST',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify(jsonData),
-        success: function(response) {
-            $('#approveRejectModal').modal('hide');
-            toastrFunction("");
-        },
-        error: function(xhr, status, error) {
-            console.error("Error:", error);
-            toastrErrorMessage("Something Went Wrong!");
-        }
-    });
-});
-
-
-function checkIfClientMasterExists(mobileNumber){
-    var jsonData = {
-        'mobileNumber': mobileNumber
-    }
-
-    $.ajax({
-        url: '/master/clientMaster/checkIfClientExists/?jsonData=' + encodeURI(JSON.stringify(jsonData)),  
-        method: 'GET',
-        dataType: 'json',
-        contentType: 'application/json',
-        data: JSON.stringify(jsonData),
-        success: function(response) {
-            $('#approveRejectModal').modal('hide');
-
-            console.log(response)
-            var clientExists = response.clientExists;
-            var clientData = response.clientData;
-            if(clientExists){
-
-            } else{
-                window.location.href = "/master/clientMaster/create?jsonData=" + encodeURIComponent(JSON.stringify(clientData));
+                        imageContainer.append(section);
+                    });
+                } else {
+                    imageContainer.append('<p class="text-center text-muted">No documents available</p>');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching data:", error);
             }
-            // toastrFunction("");
-        },
-        error: function(xhr, status, error) {
-            console.error("Error:", error);
-            toastrErrorMessage("Something Went Wrong!");
+        });
+    }
+
+    // Example usage: showPrintModal(123);
+
+
+    // <td>
+    //                   <button class="btn btn-sm btn-success mx-1" type="button" onclick="showConfirmModalForInquiryFollowUp('QUOTATION',openDocumentsUploadForInquiryFollowUp, '${item.referenceId}')">
+    //                   <i class="fa-solid fa-file"></i>
+    //                   </button>
+    //                   <button class="btn btn-sm btn-danger mx-1" type="button" onclick="showLeadFollowUpModal('${item.referenceId}')">
+    //                   <i class="fa-solid fa-trash-can"></i>
+    //                   </button>
+    //               </td>
+
+
+    function showDocumentApproveRejectModal(leadId) {
+        $('#leadId').val(leadId);
+
+        $('#docAction').val('');
+        $('#docRemarks').val('');
+
+        $('#approveRejectModal').modal('show');
+    }
+
+    $('#approveRejectOkBtn').off('click').on('click', function () {
+        var leadId = $('#leadId').val();
+        var action = $('#docAction').val();
+        var remarks = $('#docRemarks').val();
+
+        if (!action) {
+
+            toastrErrorMessage("Please select an action!")
+            return;
         }
+
+        var jsonData = {
+            leadId: leadId,
+            action: action,
+            remarks: remarks
+        }
+
+        $.ajax({
+            url: '{% url "document-approval-reject-approve" %}',
+            headers: {
+                'X-CSRFToken': $('#approveRejectForm').find('input[name="csrfmiddlewaretoken"]').val()
+            },
+            method: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(jsonData),
+            success: function (response) {
+                $('#approveRejectModal').modal('hide');
+                toastrFunction("");
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                toastrErrorMessage("Something Went Wrong!");
+            }
+        });
     });
-}
+
+
+    function checkIfClientMasterExists(mobileNumber, leadId) {
+        var jsonData = {
+            'mobileNumber': mobileNumber
+        }
+
+        $.ajax({
+            url: '/master/clientMaster/checkIfClientExists/?jsonData=' + encodeURI(JSON.stringify(jsonData)),
+            method: 'GET',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(jsonData),
+            success: function (response) {
+                console.log("checkIfClientExists response:", response);
+                $('#approveRejectModal').modal('hide');
+                var clientExists = response.clientExists;
+                var clientData = response.clientData;
+
+                var leadData = {
+                    'leadId': leadId,
+                }
+                if (clientExists) {
+                    showClientExistsModal(clientData.referenceId, clientData.clientCode, function () {
+                        window.location.href = "/loan/loanRequest/create?jsonData=" + encodeURIComponent(JSON.stringify(leadData));
+                    });
+                } else {
+                    window.location.href = "/master/clientMaster/create?jsonData=" + encodeURIComponent(JSON.stringify(clientData));
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                toastrErrorMessage("Something Went Wrong!");
+            }
+        });
+    }
+
+
+
+    function showClientExistsModal(referenceId, clientCode, onYesCallback) {
+        console.log("showClientExistsModal called with:", referenceId, clientCode);
+
+        // Set dynamic message
+        $("#clientExistsMessage").html(
+            "Client already exists - <strong><a href='/master/clientMaster/" + referenceId + "/update'>" + clientCode + "</a></strong>.<br>Proceed for loan request?"
+        );
+
+        // Show modal
+        $("#clientExistsModal").modal("show");
+
+        // Yes button
+        $("#btnYes").off("click").on("click", function () {
+            $("#clientExistsModal").modal("hide");
+            if (typeof onYesCallback === "function") {
+                onYesCallback();
+            }
+        });
+
+        // No button
+        $("#btnNo").off("click").on("click", function () {
+            $("#clientExistsModal").modal("hide");
+        });
+    }
+
 
 </script>
 {% endblock %}

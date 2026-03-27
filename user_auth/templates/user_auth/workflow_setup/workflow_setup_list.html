@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Workflow Setup List{% endblock %}
+
+{% block content %}
+<style>
+    .page-header-bar {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+        border-radius: 10px;
+        padding: 18px 24px;
+        margin-bottom: 22px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .page-header-bar h4 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .page-header-bar .breadcrumb-text {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 2px;
+    }
+
+    .btn-action {
+        padding: 4px 10px;
+        font-size: 0.78rem;
+        border-radius: 6px;
+    }
+</style>
+
+<div class="page-header-bar">
+    <div>
+        <h4><i class="fas fa-route mr-2"></i> Request Workflow Setup</h4>
+        <div class="breadcrumb-text">Settings &rsaquo; Workflow &rsaquo; List</div>
+    </div>
+    <div class="d-flex">
+        <a href="{% url 'settings-menu' %}" class="btn btn-outline-light btn-sm mr-2">
+            <i class="fas fa-arrow-left mr-1"></i> Back
+        </a>
+        <a href="{% url 'workflow-setup-create' %}" class="btn btn-light btn-sm">
+            <i class="fas fa-plus mr-1"></i> Add New Workflow
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+            <span class="font-weight-bold text-secondary"
+                style="font-size:0.82rem; text-transform:uppercase; letter-spacing:1px;">
+                All Workflows
+            </span>
+            <span class="text-muted" style="font-size:0.82rem;" id="workflowCountLabel">Loading...</span>
+        </div>
+        <div class="p-3">
+            <table id="workflowSetupTable" class="table table-bordered table-hover table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Workflow Name</th>
+                        <th>Initiator Role</th>
+                        <th>Follower Role</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        loadWorkflowSetupList("{% url 'workflow-setup-lists' %}");
+    });
+
+    function loadWorkflowSetupList(requestUrl) {
+        $.ajax({
+            url: requestUrl, method: "GET", dataType: "json",
+            success: function (data) {
+                var tbody = $('#workflowSetupTable tbody');
+                tbody.empty();
+                if (data.resultCode !== '0') {
+                    tbody.append('<tr><td colspan="5" class="text-center text-muted">No workflows found.</td></tr>');
+                    return;
+                }
+
+                var rows = data.datas || [];
+                $('#workflowCountLabel').text(rows.length + ' record(s)');
+
+                if (rows.length === 0) {
+                    tbody.append('<tr><td colspan="5" class="text-center text-muted">No workflows found.</td></tr>');
+                    return;
+                }
+
+                rows.forEach(function (item, idx) {
+                    var statusBadge = item.isActive
+                        ? '<span class="badge badge-success" style="border-radius:20px;padding:3px 10px;font-size:0.76rem;font-weight:600;">Active</span>'
+                        : '<span class="badge badge-danger" style="border-radius:20px;padding:3px 10px;font-size:0.76rem;font-weight:600;">Inactive</span>';
+
+                    var tr = `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td><strong>${escapeHtml(item.workflowName || '—')}</strong></td>
+                        <td><strong>${escapeHtml(item.fromRoleName || '—')}</strong></td>
+                        <td><b>${escapeHtml(item.toRoleName || '—')}</b></td>
+                        <td>${escapeHtml(item.description || '—')}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-info btn-action mr-1" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                    tbody.append(tr);
+                });
+
+                $('#workflowSetupTable').DataTable({
+                    destroy: true,
+                    order: [[0, 'asc']],
+                    language: { search: "_INPUT_", searchPlaceholder: "Search workflows..." }
+                });
+            },
+            error: function () { toastrErrorMessage("Failed to load workflows."); }
+        });
+    }
+</script>
+{% endblock javascript %}

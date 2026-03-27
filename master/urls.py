@@ -12,8 +12,13 @@ urlpatterns = [
      path('customerOnboarding/list', views.CustomerOnBoardingView.as_view(), name='customer-onboarding-page'),
 
      path('clientMaster/list', views.ClientMasterListView.as_view(), name='client-master-list'),
+     path('clientMaster/lists',views.ClientMasterListDataView.as_view(), name='client-master-lists'),
      path('clientMaster/create', views.ClientMasterCreateView.as_view(), name='client-master-create'),
+     path('clientMaster/<str:pk>/update', views.ClientMasterUpdateView.as_view(), name='client-master-update'),
+     path('clientMaster/<str:pk>/findById', views.ClientMasterDataByIdView.as_view(), name='client-master-data-by-id'),
+     path('clientMaster/<str:pk>/edit', views.ClientMasterEditView.as_view(), name='client-master-edit'),
      path('clientMaster/checkIfClientExists/', views.ClientMasterCheckIfClientExistsView.as_view(), name='client-master-check-if-client-exists'),
+     path('clientMaster/getLeadData/', views.ClientMasterGetLeadDataView.as_view(), name='client-master-get-lead-data'),
      path('generalSettings/lists',views.GeneralSettingsListDataView.as_view(), name='general-settings-lists'),
      path('contact/checkIfContactExists/', views.CheckIfContactExistsView.as_view(), name='check-if-contact-exists'),
 

@@ -95,18 +95,26 @@
          <div class="tab-pane fade show active">
 
 
-            <div class="col-md-6 col-sm-12 col-xs-12">
-               <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Mobile Number</label>
-                  <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm" id="leadQuotationMobileNumber"
-                        name="leadQuotationMobileNumber">
+            <div class="row">
+               <div class="col-md-6 col-sm-12 col-xs-12">
+                  <div class="form-group row">
+                     <label for="" class="col-md-4 form-label">Mobile Number</label>
+                     <div class="col-md-8">
+                        <input type="text" class="form-control form-control-sm" id="leadQuotationMobileNumber"
+                           name="leadQuotationMobileNumber">
+                     </div>
                   </div>
                </div>
             </div>
 
+            <div class="row justify-content-end">
+               <button id="btnNextMobileNumberInformation" type="button"
+                  class="btn btn-sm btn-primary next-btn">Next</button>
+            </div>
 
-            <button id="btnNextMobileNumberInformation" type="button" class="btn btn-primary next-btn">Next</button>
+
+
+
          </div>
 
          <!-- Step 2: Product Details -->
@@ -200,38 +208,42 @@
                   </div>
                </div>
             </div>
-            <button type="button" class="btn btn-secondary prev-btn">Previous</button>
-            <button type="button" class="btn btn-primary next-btn">Next</button>
+            <div class="row justify-content-end">
+               <button type="button" class="btn btn-sm btn-secondary prev-btn">Previous</button> &nbsp;
+               <button type="button" class="btn btn-sm btn-primary next-btn">Next</button>
+            </div>
+
          </div>
 
          <div class="tab-pane fade">
             <div class="row">
                <div class="col-md-12 col-sm-12 col-xs-12">
                   <div class="form-group row">
-                
 
-                        <label for="" class="col-md-2">Loan Type</label>
-                        <div class="col-md-4">
-                           <select class="form-control select2 w-100" name="leadQuotationLoanType" id="leadQuotationLoanType">
+
+                     <label for="" class="col-md-2">Loan Type</label>
+                     <div class="col-md-4">
+                        <select class="form-control select2 w-100" name="leadQuotationLoanType"
+                           id="leadQuotationLoanType">
                            <option value="select">SELECT</option>
                         </select>
-                        </div>
+                     </div>
 
-                        <label for="" class="col-md-2">Lead Source</label>
-                        <div class="col-md-4">
-                           <select class="form-control select2 w-100" name="leadQuotationSource" id="leadQuotationSource">
+                     <label for="" class="col-md-2">Lead Source</label>
+                     <div class="col-md-4">
+                        <select class="form-control select2 w-100" name="leadQuotationSource" id="leadQuotationSource">
                            <option value="select">SELECT</option>
                         </select>
-                        </div>
+                     </div>
                   </div>
 
 
                </div>
-               
+
             </div>
 
             <div class="row">
-           
+
                <div class="col-md-6 col-sm-12 col-xs-12">
                   <div class="form-group row">
                      <label for="" class="col-md-4 form-label">Loan Amount</label>
@@ -249,7 +261,7 @@
                   <div class="form-group row">
                      <label for="" class="col-md-4 form-label">Interest Rate</label>
                      <div class="col-md-8">
-                         <input type="text" class="form-control form-control-sm" id="leadQuotationInterestRate"
+                        <input type="text" class="form-control form-control-sm" id="leadQuotationInterestRate"
                            name="leadQuotationInterestRate">
                         </input>
                      </div>
@@ -261,7 +273,7 @@
                      <div class="col-md-8">
                         <input type="text" class="form-control form-control-sm" id="leadQuotationLoanTenure"
                            name="leadQuotationLoanTenure">
-                     </input>
+                        </input>
                      </div>
                   </div>
                </div>
@@ -270,9 +282,215 @@
                <label class="form-label">Remarks</label>
                <textarea class="form-control" name="leadQuotationRemarks" id="leadQuotationRemarks"></textarea>
             </div>
-            <button type="button" class="btn btn-secondary prev-btn">Previous</button>
-            <button type="button" id="btnSaveLeadQuotation" class="btn btn-success">Save</button>
+            <div class="d-flex justify-content-end gap-2 mt-3">
+               <button type="button" class="btn btn-sm btn-secondary prev-btn">Previous</button> &nbsp;
+               <button type="button" id="btnEmiSchedule" class="btn btn-sm btn-primary">
+                  <i class="bi bi-calculator me-1"></i>EMI Schedule
+               </button> &nbsp;
+               <button type="button" id="btnSaveLeadQuotation" class="btn btn-sm btn-success">Save</button>
+            </div>
          </div>
       </div>
    </form>
 </div>
+
+<!-- EMI Schedule Modal -->
+<div class="modal fade" id="emiScheduleModal" tabindex="-1" aria-labelledby="emiScheduleModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content emi-modal">
+         <div class="modal-header emi-modal-header">
+            <div>
+               <h5 class="modal-title" id="emiScheduleModalLabel">
+                  <i class="bi bi-calendar2-week me-2"></i>EMI Schedule
+               </h5>
+               <small class="text-light opacity-75" id="emiScheduleSummary"></small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+         </div>
+         <div class="modal-body p-0">
+            <!-- Summary Cards -->
+            <div class="emi-summary-cards p-3">
+               <div class="row g-2">
+                  <div class="col-md-3 col-6">
+                     <div class="emi-summary-card">
+                        <div class="emi-summary-label">Loan Amount</div>
+                        <div class="emi-summary-value" id="emiSummaryLoanAmount">-</div>
+                     </div>
+                  </div>
+                  <div class="col-md-3 col-6">
+                     <div class="emi-summary-card">
+                        <div class="emi-summary-label">Interest Rate</div>
+                        <div class="emi-summary-value" id="emiSummaryInterestRate">-</div>
+                     </div>
+                  </div>
+                  <div class="col-md-3 col-6">
+                     <div class="emi-summary-card">
+                        <div class="emi-summary-label">Tenure</div>
+                        <div class="emi-summary-value" id="emiSummaryTenure">-</div>
+                     </div>
+                  </div>
+                  <div class="col-md-3 col-6">
+                     <div class="emi-summary-card highlight">
+                        <div class="emi-summary-label">Monthly EMI</div>
+                        <div class="emi-summary-value" id="emiSummaryMonthlyEmi">-</div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+
+            <!-- EMI Table -->
+            <div class="table-responsive">
+               <table class="table table-hover mb-0 emi-table">
+                  <thead>
+                     <tr>
+                        <th>#</th>
+                        <th>Month</th>
+                        <th>EMI Amount</th>
+                        <th>Principal</th>
+                        <th>Interest</th>
+                        <th>Balance</th>
+                     </tr>
+                  </thead>
+                  <tbody id="emiScheduleTableBody">
+                     <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">
+                           <i class="bi bi-info-circle me-1"></i>Click "EMI Schedule" to generate
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+         <div class="modal-footer emi-modal-footer">
+            <div class="d-flex align-items-center w-100 justify-content-between">
+               <small class="text-muted" id="emiTotalInterest"></small>
+               <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+
+<style>
+   .emi-modal .modal-content {
+      border: none;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+   }
+
+   .emi-modal-header {
+      background: linear-gradient(135deg, #0d6efd, #6610f2);
+      color: white;
+      border-bottom: none;
+      padding: 1.25rem 1.5rem;
+   }
+
+   .emi-modal-header .modal-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+   }
+
+   .emi-summary-cards {
+      background: #f8f9fc;
+      border-bottom: 1px solid #e9ecef;
+   }
+
+   .emi-summary-card {
+      background: white;
+      border-radius: 10px;
+      padding: 12px 16px;
+      border: 1px solid #e9ecef;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+   }
+
+   .emi-summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+   }
+
+   .emi-summary-card.highlight {
+      background: linear-gradient(135deg, #0d6efd, #6610f2);
+      color: white;
+      border: none;
+   }
+
+   .emi-summary-card.highlight .emi-summary-label {
+      color: rgba(255, 255, 255, 0.8);
+   }
+
+   .emi-summary-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6c757d;
+      font-weight: 600;
+      margin-bottom: 2px;
+   }
+
+   .emi-summary-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+   }
+
+   .emi-table thead th {
+      background: #f1f3f5;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #495057;
+      font-weight: 600;
+      border-bottom: 2px solid #dee2e6;
+      padding: 10px 16px;
+      white-space: nowrap;
+   }
+
+   .emi-table tbody td {
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      vertical-align: middle;
+   }
+
+   .emi-table tbody tr {
+      transition: background 0.15s ease;
+   }
+
+   .emi-table tbody tr:hover {
+      background: #f0f4ff;
+   }
+
+   .emi-table tbody tr:last-child td {
+      font-weight: 600;
+      background: #f8f9fa;
+   }
+
+   .emi-modal-footer {
+      border-top: 1px solid #e9ecef;
+      padding: 0.75rem 1.5rem;
+   }
+
+   #btnEmiSchedule {
+      border-width: 2px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+   }
+
+   #btnEmiSchedule:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+   }
+
+   .emi-loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      color: #6c757d;
+   }
+
+   .emi-loading .spinner-border {
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-right: 0.75rem;
+   }
+</style>

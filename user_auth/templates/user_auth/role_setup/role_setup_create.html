@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Role{% endblock %}
+
+{% block content %}
+
+<div class="page-header-bar">
+    <div>
+        <h4><i class="fas fa-plus-circle mr-2"></i> Create New Role</h4>
+        <div class="breadcrumb-text">Settings &rsaquo; Role Setup &rsaquo; Create</div>
+    </div>
+    <a href="{% url 'role-setup-list' %}" class="btn btn-outline-light btn-sm">
+        <i class="fas fa-arrow-left mr-1"></i>
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form id="roleCreateForm">
+            {% csrf_token %}
+
+            {% include 'user_auth/role_setup/role.html' with is_edit=False %}
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{% url 'role-setup-list' %}" class="btn btn-secondary btn-sm mr-2">Cancel</a>
+                <button type="button" class="btn btn-primary btn-sm" id="btnSaveRole">
+                    <i class="fas fa-save mr-1"></i> Save Role
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script>
+    // Auto-generate role code from role name
+    // $('#roleName').on('input', function () {
+    //     var code = $(this).val().trim().toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
+    //     $('#roleCode').val(code);
+    // });
+
+    $('#btnSaveRole').off('click').on('click', function () {
+
+        var selectedPerms = [];
+        $('input[name="permissions"]:checked').each(function () {
+            selectedPerms.push($(this).val());
+        });
+
+        var payload = {
+            name: $('#roleName').val().trim(),
+            roleCode: $('#roleCode').val().trim(),
+            description: $('#roleDescription').val().trim(),
+            isActive: $('#roleStatus').val() === 'true',
+            permissions: selectedPerms,
+            remarks: $('#roleRemarks').val().trim()
+        };
+
+        if (!payload.name || !payload.roleCode) {
+            toastrErrorMessage("Role Name and Role Code are required.");
+            return;
+        }
+
+        openConfirmSaveModal(
+            JSON.stringify(payload),
+            'roleCreateForm',
+            saveInsertUpdateData,
+            "{% url 'role-setup-create' %}",
+            "{% url 'role-setup-list' %}"
+        );
+    });
+</script>
+{% endblock javascript %}

@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<style>
+    .settings-hero {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        border-radius: 12px;
+        padding: 32px 36px;
+        margin-bottom: 28px;
+        color: #fff;
+    }
+
+    .settings-hero h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .settings-hero p {
+        color: rgba(255, 255, 255, 0.65);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .settings-card {
+        border: none;
+        border-radius: 14px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        overflow: hidden;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        color: inherit;
+    }
+
+    .settings-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .settings-card .card-icon-wrap {
+        height: 90px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.6rem;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .icon-blue {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        color: #fff;
+    }
+
+    .icon-purple {
+        background: linear-gradient(135deg, #7c3aed, #a78bfa);
+        color: #fff;
+    }
+
+    .icon-green {
+        background: linear-gradient(135deg, #059669, #34d399);
+        color: #fff;
+    }
+
+    .icon-orange {
+        background: linear-gradient(135deg, #d97706, #fbbf24);
+        color: #fff;
+    }
+
+    .settings-card .card-body {
+        padding: 20px 22px;
+        background: #fff;
+    }
+
+    .settings-card .card-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #1e293b;
+    }
+
+    .settings-card .card-text {
+        font-size: 0.83rem;
+        color: #64748b;
+        line-height: 1.5;
+    }
+
+    .settings-card .card-footer-link {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #2563eb;
+        padding: 10px 22px;
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .section-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: #94a3b8;
+        margin-bottom: 14px;
+    }
+</style>
+
+<!-- Hero Banner -->
+<div class="settings-hero">
+    <h2><i class="fas fa-cog mr-2"></i> Settings</h2>
+    <p>Manage application configuration, users, roles, and system preferences.</p>
+</div>
+
+<!-- User Management Section -->
+<p class="section-label">User Management</p>
+<div class="row">
+    <div class="col-md-4 col-sm-6 mb-4">
+        <a href="{% url 'user-setup-list' %}" class="settings-card card">
+            <div class="card-icon-wrap icon-blue">
+                <i class="fas fa-user-cog"></i>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">User Setup</h5>
+                <p class="card-text">Create and manage system users. Assign credentials, activate or deactivate
+                    accounts.</p>
+            </div>
+            <div class="card-footer-link">
+                Manage Users <i class="fas fa-arrow-right"></i>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-4 col-sm-6 mb-4">
+        <a href="{% url 'role-setup-list' %}" class="settings-card card">
+            <div class="card-icon-wrap icon-purple">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">User Role Setup</h5>
+                <p class="card-text">Define roles and permission sets. Control what each role can access within the
+                    system.</p>
+            </div>
+            <div class="card-footer-link">
+                Manage Roles <i class="fas fa-arrow-right"></i>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-4 col-sm-6 mb-4">
+        <a href="{% url 'workflow-setup-list' %}" class="settings-card card">
+            <div class="card-icon-wrap icon-green">
+                <i class="fas fa-route"></i>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Request Workflow Setup</h5>
+                <p class="card-text">Set up request workflows from role to role. Define transitions and manage sequence.
+                </p>
+            </div>
+            <div class="card-footer-link">
+                Manage Workflow <i class="fas fa-arrow-right"></i>
+            </div>
+        </a>
+    </div>
+</div>
+
+{% endblock content %}

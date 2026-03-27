@@ -1,0 +1,137 @@
+<style>
+    .section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #64748b;
+        margin: 20px 0 12px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .required-star {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .perm-checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+    }
+
+    .perm-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 14px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        transition: 0.2s;
+        cursor: pointer;
+    }
+
+    .perm-item:hover {
+        background: #ede9fe;
+        border-color: #a78bfa;
+    }
+
+    .perm-item input[type="checkbox"] {
+        margin-right: 10px;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .perm-item label {
+        margin: 0;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        color: #374151;
+    }
+
+    .perm-item input[type="checkbox"]:checked+label {
+        color: #7c3aed;
+    }
+</style>
+
+<!-- Role Info -->
+<p class="section-title"><i class="fas fa-tag mr-1"></i> Role Information</p>
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="form-label">Role Name <span class="required-star">*</span></label>
+            <input type="text" id="roleName" name="roleName" class="form-control form-control-sm"
+                placeholder="e.g. Loan Officer" required>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="form-label">Role Code <span class="required-star">*</span></label>
+            <input type="text" id="roleCode" name="roleCode" class="form-control form-control-sm"
+                placeholder="e.g. LOAN_OFFICER" required>
+            {% if not is_edit %}
+            <small class="text-muted">Uppercase, underscore-separated. Auto-suggested on typing role name.</small>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="form-label">Status</label>
+            <select id="roleStatus" name="isActive" class="form-control form-control-sm">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="form-label">Description</label>
+    <textarea id="roleDescription" name="description" class="form-control form-control-sm" rows="2"
+        placeholder="Brief description of this role's responsibilities..."></textarea>
+</div>
+
+<!-- Permissions Section -->
+<p class="section-title"><i class="fas fa-shield-alt mr-1"></i> Permissions</p>
+<div class="perm-checkbox-group">
+    <div class="perm-item"><input type="checkbox" id="perm_dashboard" name="permissions" value="DASHBOARD"><label
+            for="perm_dashboard">Dashboard</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_loan_app" name="permissions" value="LOAN_APPLICATION"><label
+            for="perm_loan_app">Loan Application</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_loan_req" name="permissions" value="LOAN_REQUEST"><label
+            for="perm_loan_req">Loan Request</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_doc_approval" name="permissions"
+            value="DOCUMENT_APPROVAL"><label for="perm_doc_approval">Document Approval</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_approved_docs" name="permissions"
+            value="APPROVED_DOCUMENTS"><label for="perm_approved_docs">Approved Documents</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_client_master" name="permissions"
+            value="CLIENT_MASTER"><label for="perm_client_master">Client Master</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_customers" name="permissions" value="CUSTOMERS"><label
+            for="perm_customers">Customers</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_inquiry" name="permissions" value="INQUIRY_FOLLOW_UP"><label
+            for="perm_inquiry">Inquiry Follow Up</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_tools" name="permissions" value="TOOLS"><label
+            for="perm_tools">Tools</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_settings" name="permissions" value="SETTINGS"><label
+            for="perm_settings">Settings</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_user_setup" name="permissions" value="USER_SETUP"><label
+            for="perm_user_setup">User Setup</label></div>
+    <div class="perm-item"><input type="checkbox" id="perm_role_setup" name="permissions" value="ROLE_SETUP"><label
+            for="perm_role_setup">Role Setup</label></div>
+</div>
+
+<!-- Remarks -->
+<div class="form-group mt-3">
+    <label class="form-label">Remarks</label>
+    <textarea id="roleRemarks" name="remarks" class="form-control form-control-sm" rows="2"
+        placeholder="Optional notes..."></textarea>
+</div>

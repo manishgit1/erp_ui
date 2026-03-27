@@ -18,12 +18,12 @@
     {% block extra_head %}{% endblock %}
 
     <style>
-        .form-control-sm {
+        /* .form-control-sm {
             font-size: 0.7rem;
             padding: 0.15rem 0.3rem;
             height: 1.6rem;
             line-height: 1.2;
-        }
+        } */
 
         .form-label {
             font-size: 13px;
@@ -51,6 +51,8 @@
     {% include 'modal/document_approve_reject_modal.html' %}
     {% include 'modal/confirm_modal.html' %}
     {% include 'modal/general_data_search_modal.html' %}
+
+    {% include 'modal/loan_action_modal.html' %}
 
 
     <div class="wrapper">
@@ -116,20 +118,27 @@
 
                         <li class="nav-item">
                             <a href="{% url 'document-approval-list' %}" class="nav-link">
-                                <i class="nav-icon fas fa-shopping-cart"></i>
+                                <i class="fa-solid fa-arrows-spin"></i>
                                 <p>Document Approval</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a href="{% url 'approved-document-list' %}" class="nav-link">
-                                <i class="nav-icon fas fa-shopping-cart"></i>
+                                <i class="fa-solid fa-file-invoice"></i>
                                 <p>Approved Documents</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
-                            <a href="{% url 'client-master-create' %}" class="nav-link">
+                            <a href="{% url 'loan-request-list' %}" class="nav-link">
+                                <i class="fa-solid fa-landmark"></i>
+                                <p>Loan Request</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'client-master-list' %}" class="nav-link">
                                 <i class="nav-icon fas fa-boxes"></i>
                                 <p>Client Master</p>
                             </a>
@@ -155,18 +164,32 @@
                         </li> -->
 
                         <li class="nav-item">
+                            <a href="{% url 'settings-menu' %}" class="nav-link">
+                                <i class="nav-icon fas fa-sliders-h"></i>
+                                <p>Settings</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'workflow-setup-list' %}" class="nav-link">
+                                <i class="nav-icon fas fa-route"></i>
+                                <p>Workflow Setup</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
                             <a href="{% url 'tools-template-view' %}" class="nav-link">
                                 <i class="nav-icon fas fa-cogs"></i>
                                 <p>Tools</p>
                             </a>
                         </li>
 
-                        <!-- <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-cogs"></i>
-                                <p>Settings</p>
+                        <li class="nav-item mt-auto">
+                            <a href="#" class="nav-link text-danger" id="btnLogOut">
+                                <i class="nav-icon fas fa-sign-out-alt"></i>
+                                <p>Logout</p>
                             </a>
-                        </li>  -->
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -200,7 +223,7 @@
 
         <!-- Footer -->
         <footer class="main-footer text-sm text-center">
-            <strong>&copy; 2025 <a href="#">Fintech</a>.</strong> All rights reserved.
+            <strong>&copy; 2026 <a href="#">Fintech</a>.</strong> All rights reserved.
         </footer>
     </div>
 
@@ -223,9 +246,30 @@
 
 
 
-        //    $("#btnLogOut").off('click').on('click', function(){
-
-        //    })
+        $("#btnLogOut").off('click').on('click', function (e) {
+            e.preventDefault();
+            showConfirmModal("Logout", function (confirmed) {
+                if (confirmed) {
+                    $.ajax({
+                        url: "{% url 'user-logout' %}",
+                        method: "GET",
+                        success: function (response) {
+                            if (response.resultCode === '0') {
+                                toastrSuccessMessage("Logged out successfully");
+                                setTimeout(function () {
+                                    window.location.href = "{% url 'user-login' %}";
+                                }, 500);
+                            } else {
+                                toastrErrorMessage(response.resultDescription || "Logout failed");
+                            }
+                        },
+                        error: function () {
+                            toastrErrorMessage("An error occurred during logout");
+                        }
+                    });
+                }
+            });
+        });
 
 
 
@@ -309,7 +353,6 @@
                 "dataType": "json",
                 "contentType": "application/json",
                 success: function (data) {
-                    console.log(data)
                     $('#saveUpdateConfirmModal').modal('hide');
 
                     if (data.hasOwnProperty('resultCode')) {
@@ -341,7 +384,7 @@
                 "setupType": jsonValue
             };
 
-            $.ajax({
+            return $.ajax({
                 "url": requestUrl + "?jsonData=" + encodeURI(JSON.stringify(jsonData)),
                 "method": "GET",
                 "dataType": "json",
@@ -354,7 +397,7 @@
                         }
                         else {
                             data = data.datas;
-                            
+
                             for (j = 0; j < data.length; j++) {
 
                                 var item = `
@@ -579,6 +622,8 @@
                 .replace(/([a-z])([A-Z])/g, '$1 $2'); // camelCase -> spaced
             return s.replace(/\b\w/g, ch => ch.toUpperCase());
         }
+
+
         function escapeHtml(str) {
             return String(str || '').replace(/[&<>"'`=\/]/g, function (s) {
                 return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '/': '&#x2F;', '`': '&#96;', '=': '&#61;' })[s];
@@ -687,19 +732,19 @@
         })
 
 
-        $('#generalSearchModal').on('hidden.bs.modal', function(){
+        $('#generalSearchModal').on('hidden.bs.modal', function () {
             $('#elementIdOnClickSearchModal').val('');
             $('#generalSearchModalTable tbody').empty();
         })
 
 
 
-        function loadDistrictAndProvinceByMunicipality(referenceId){
-              var jsonData = {
+        function loadDistrictAndProvinceByMunicipality(referenceId, districtElementId = 'clientMasterPermanentDistrict', provinceElementId = 'clientMasterPermanentProvince') {
+            var jsonData = {
                 'municipalityId': referenceId
-              };
+            };
 
-              $.ajax({
+            $.ajax({
                 "url": "/master/getAddressInfo/?jsonData=" + encodeURI(JSON.stringify(jsonData)),
                 "method": "GET",
                 "dataType": "json",
@@ -712,11 +757,11 @@
                         }
                         else {
                             data = data.datas;
-                            if(data !=null || data != undefined || data != ''){
-                                $('#clientMasterPermanentDistrict').val(data.districtId).trigger('change');
-                                $('#clientMasterPermanentProvince').val(data.provinceId).trigger('change');
+                            if (data != null || data != undefined || data != '') {
+                                $('#' + districtElementId).val(data.districtId).trigger('change');
+                                $('#' + provinceElementId).val(data.provinceId).trigger('change');
                             }
-                           
+
                         }
                     }
                 },
@@ -728,11 +773,119 @@
 
 
 
-        function getBusinessDate(){
-            
+        // function getBusinessDate() {
+
+        // }
+
+        function showUpdatePage(url) {
+            window.location.href = url;
         }
 
 
+        function formatCurrency(amount) {
+
+            if (amount === null || amount === undefined || amount === '') {
+                return '';
+            }
+
+            amount = amount.toString();
+
+            var parts = amount.split(".");
+            var integerPart = parts[0];
+            var decimalPart = parts.length > 1 ? "." + parts[1] : "";
+
+            var lastThree = integerPart.substring(integerPart.length - 3);
+            var otherNumbers = integerPart.substring(0, integerPart.length - 3);
+
+            if (otherNumbers !== '') {
+                lastThree = ',' + lastThree;
+            }
+
+            var formatted =
+                otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+
+            return formatted + decimalPart;
+        }
+
+
+
+        function formatDateYearSlash(dateStr) {
+            if (!dateStr) return '';
+
+            var parts = dateStr.split('-'); // ["2024", "03", "02"]
+            if (parts.length !== 3) return dateStr;
+
+            return parts[0] + '/' + parts[1] + '/' + parts[2];
+        }
+
+
+
+
+
+        function timelineData(referenceId) {
+            $('#loanTimelineContainer').html(`
+                <div class="text-center p-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            `);
+            $('#loanTimelineModal').modal('show');
+
+            $.ajax({
+                url: '/loan/loanRequest/' + referenceId + '/timeline',
+                method: 'GET',
+                success: function (data) {
+                    var container = $('#loanTimelineContainer');
+                    container.empty();
+
+                    data = data.datas;
+
+                    if (data && data.length > 0) {
+                        var timelineHtml = '<div class="timeline">';
+
+                        data.forEach(function (item) {
+                            var iconClass = 'fas fa-info bg-info';
+                            if (item.actionType === 'CREATE') iconClass = 'fas fa-plus bg-primary';
+                            else if (item.actionType === 'APPROVE') iconClass = 'fas fa-check bg-success';
+                            else if (item.actionType === 'REJECT') iconClass = 'fas fa-times bg-danger';
+                            else if (item.actionType === 'REVERT') iconClass = 'fas fa-undo bg-warning';
+                            else if (item.actionType === 'DISBURSE') iconClass = 'fas fa-money-bill bg-success';
+
+                            timelineHtml += `
+                                <div>
+                                    <i class="${iconClass}"></i>
+                                    <div class="timeline-item">
+                                        <span class="time"><i class="fas fa-clock"></i> ${formatDateTime(item.createdAt)}</span>
+                                        <h3 class="timeline-header"><b>${item.action}</b> by ${item.createdBy || 'System'}</h3>
+                                    ${(item.toRoleName !== null && item.toRoleName !== '' && item.toRoleName !== undefined) ?
+                                    `<h4 class="timeline-header">${item.fromRoleName} to ${item.toRoleName}</h4>`
+                                    : ''}
+                                        <div class="timeline-body">
+                                            ${item.remarks || 'No remarks provided.'}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+
+                        timelineHtml += '<div><i class="fas fa-clock bg-gray"></i></div></div>';
+                        container.append(timelineHtml);
+                    } else {
+                        container.append('<div class="text-center p-4">No timeline data found.</div>');
+                    }
+                },
+                error: function (xhr) {
+                    $('#loanTimelineContainer').html('<div class="text-center text-danger p-4">Error loading timeline data.</div>');
+                }
+            });
+        }
+
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '';
+            var d = new Date(dateStr);
+            return d.toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
 
     </script>
 

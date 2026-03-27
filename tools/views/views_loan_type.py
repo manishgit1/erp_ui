@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.conf import settings
 import requests
 from django.http import JsonResponse
+from master.globalparamters import get_auth_headers
 
 API_URL = settings.API_URL
 
@@ -15,11 +16,7 @@ class LoanTypeCreateView(CreateView):
 
    def post(self,request,*args):
       try:
-
-         print('loan type create')
-         headers = {
-               "Content-Type": request.META.get("CONTENT_TYPE", "application/json")
-         }
+         headers = get_auth_headers(request)
 
          response = requests.post(
                API_URL + '/tools/loanType/create',
@@ -55,8 +52,9 @@ class LoanTypeListDataView(View):
 
    def get(self,request,format=None):
       try:
+         headers = get_auth_headers(request)
          request_url = API_URL + '/tools/loanType/list'
-         response = requests.get(request_url, timeout=20)
+         response = requests.get(request_url, timeout=20, headers=headers)
          response.raise_for_status()  
          if response.status_code == 200:
             return JsonResponse(response.json(), status=200)

@@ -4,8 +4,9 @@ import requests
 from django.http import JsonResponse
 import logging
 from django.conf import settings
+from master.globalparamters import get_auth_headers
 
-logger = logging.getLogger('django')
+logger = logging.getLogger('erp_ui')
 API_URL = settings.API_URL
 
 class DocumentUploadCreateView(View):
@@ -20,9 +21,7 @@ class DocumentUploadCreateView(View):
    
    def post(self,request,*args,**kwargs):
       try:
-         headers = {
-               "Content-Type": request.META.get("CONTENT_TYPE", "application/json")
-         }
+         headers = get_auth_headers(request)
 
          response = requests.post(
                API_URL + '/crm/documentUpload/create',
@@ -50,9 +49,7 @@ class DocumentUploadUploadView(View):
    
    def post(self,request,*args,**kwargs):
       try:
-         headers = {
-               "Content-Type": request.META.get("CONTENT_TYPE", "application/json")
-         }
+         headers = get_auth_headers(request)
 
          response = requests.post(
                API_URL + '/crm/documentUpload/upload',

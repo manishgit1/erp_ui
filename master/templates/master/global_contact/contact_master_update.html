@@ -1,197 +1,198 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
- {% include 'master/global_contact/contact_master.html' %}
+{% include 'master/global_contact/contact_master.html' %}
 {% endblock %}
 
 
 {% block javascript %}
 <script>
-   $(document).ready(function(){
+    $(document).ready(function () {
 
-    $.when(
-      loadSelectElementData("contactMasterPermanentProvince","{% url 'general-settings-lists' %}", "setupType", "province" ),
-      loadSelectElementData("contactMasterPermanentDistrict","{% url 'general-settings-lists' %}", "setupType", "district" ),
-      loadSelectElementData("contactMasterPermanentMunicipality","{% url 'general-settings-lists' %}", "setupType", "vdcMunicipality" ),
-      loadSelectElementData("contactMasterCitizenshipIssuedDistrict","{% url 'general-settings-lists' %}", "setupType", "district" )
-    ).done(function(){
-       contactMasterDataById("{{contactId}}");
-    });
+        $.when(
+            loadSelectElementData("contactMasterPermanentProvince", "{% url 'general-settings-lists' %}", "setupType", "province"),
+            loadSelectElementData("contactMasterPermanentDistrict", "{% url 'general-settings-lists' %}", "setupType", "district"),
+            loadSelectElementData("contactMasterPermanentMunicipality", "{% url 'general-settings-lists' %}", "setupType", "vdcMunicipality"),
+            loadSelectElementData("contactMasterCitizenshipIssuedDistrict", "{% url 'general-settings-lists' %}", "setupType", "district")
+        ).done(function () {
+            contactMasterDataById("{{contactId}}");
+        });
 
 
 
-     let currentStep = 0;
-    const steps = $(".step");
-    const tabs = $(".tab-pane");
+        let currentStep = 0;
+        const steps = $(".step");
+        const tabs = $(".tab-pane");
 
-    function showStep(index) {
-        tabs.eq(currentStep).removeClass("show active");
-        steps.eq(currentStep).removeClass("active");
+        function showStep(index) {
+            tabs.eq(currentStep).removeClass("show active");
+            steps.eq(currentStep).removeClass("active");
 
-        currentStep = index;
+            currentStep = index;
 
-        tabs.eq(currentStep).addClass("show active");
-        steps.eq(currentStep).addClass("active");
-    }
+            tabs.eq(currentStep).addClass("show active");
+            steps.eq(currentStep).addClass("active");
+        }
 
-    function generatePreview() {
-        let formData = {
-            "First Name": $("#contactMasterFirstName").val(),
-            "Middle Name": $("#contactMasterMiddleName").val(),
-            "Last Name": $("#contactMasterLastName").val(),
-            "Mobile Number": $("#contactMasterMobileNumber").val(),
-            "Phone Number": $("#contactMasterPhoneNumber").val(),
-            "Email": $("#contactMasterEmail").val(),
-            "Per. Municipality": $("#contactMasterPermanentMunicipality").val(),
-            "Per. District": $("#contactMasterPermanentDistrict").val(),
-            "Per. Province": $("#contactMasterPermanentProvince").val(),
-            "Per. Ward No.": $("#contactMasterPermanentWardNo").val(),
-            "Citizenship Issued Date": $("#contactMasterCitizenshipIssuedDate").val(),
-            "Citizenship Issued District": $("#contactMasterCitizenshipIssuedDistrict").val()
-        };
+        function generatePreview() {
+            let formData = {
+                "First Name": $("#contactMasterFirstName").val(),
+                "Middle Name": $("#contactMasterMiddleName").val(),
+                "Last Name": $("#contactMasterLastName").val(),
+                "Mobile Number": $("#contactMasterMobileNumber").val(),
+                "Phone Number": $("#contactMasterPhoneNumber").val(),
+                "Email": $("#contactMasterEmail").val(),
+                "Per. Municipality": $("#contactMasterPermanentMunicipality option:selected").text(),
+                "Per. District": $("#contactMasterPermanentDistrict option:selected").text(),
+                "Per. Province": $("#contactMasterPermanentProvince option:selected").text(),
+                "Per. Ward No.": $("#contactMasterPermanentWardNo").val(),
+                "Citizenship Issued Date": $("#contactMasterCitizenshipIssuedDate").val(),
+                "Citizenship Issued District": $("#contactMasterCitizenshipIssuedDistrict option:selected").text()
+            };
 
-        let html = `<table class="table table-sm table-bordered mb-0"><tbody>`;
-        $.each(formData, function(key, value) {
-            html += `<tr>
+            let html = `<table class="table table-sm table-bordered mb-0"><tbody>`;
+            $.each(formData, function (key, value) {
+                html += `<tr>
                         <th style="width:200px;">${key}</th>
                         <td>${value || '-'}</td>
                      </tr>`;
-        });
-        html += `</tbody></table>`;
+            });
+            html += `</tbody></table>`;
 
-        $("#customerPreview").html(html);
+            $("#customerPreview").html(html);
+        }
+
+        $(".next-btn").on("click", function () {
+            if (currentStep === 0) {
+                generatePreview();
+            }
+            if (currentStep < steps.length - 1) {
+                showStep(currentStep + 1);
+            }
+        });
+
+        $(".prev-btn").on("click", function () {
+            if (currentStep > 0) {
+                showStep(currentStep - 1);
+            }
+        });
+    });
+
+
+    $('#btnSaveContactMaster').off('click').on('click', function () {
+        var form = $("#contactMasterForm");
+
+        var rules = {
+            contactMasterFirstName: {
+                required: true
+            },
+            contactMasterLastName: {
+                required: true
+            },
+            contactMasterMobileNumber: {
+                required: true,
+                pattern: /^[0-9]{10}$/,
+                message: "Mobile number must be exactly 10 digits"
+            },
+            contactMasterPermanentMunicipality: {
+                required: true
+            },
+            contactMasterPermanentDistrict: {
+                required: true
+            },
+            contactMasterPermanentProvince: {
+                required: true
+            },
+            contactMasterPermanentWardNo: {
+                required: true
+            },
+            contactMasterCitizenshipIssuedDate: {
+                required: true
+            },
+            contactMasterCitizenshipIssuedDistrict: {
+                required: true
+            }
+
+        }
+
+        if (!validateForm("#contactMasterForm", rules)) {
+            return;
+        }
+
+        var inputJson = convertToJsonForContactMaster();
+
+
+        openConfirmSaveModal(inputJson, 'contactMasterForm', saveInsertUpdateData, "/master/contact/{{contactId}}/edit", "{% url 'contact-master-list' %}");
+
+    })
+
+
+
+    function convertToJsonForContactMaster() {
+        let contactMasterData = {};
+        contactMasterData.firstName = $("#contactMasterFirstName").val();
+        contactMasterData.middleName = $("#contactMasterMiddleName").val();
+        contactMasterData.lastName = $("#contactMasterLastName").val();
+        contactMasterData.mobileNumber = $("#contactMasterMobileNumber").val();
+        contactMasterData.contactNumber = $("#contactMasterPhoneNumber").val();
+        contactMasterData.email = $("#contactMasterEmail").val();
+        contactMasterData.permanentMunicipalityId = $("#contactMasterPermanentMunicipality").val();
+        contactMasterData.permanentDistrictId = $("#contactMasterPermanentDistrict").val();
+        contactMasterData.permanentProvinceId = $("#contactMasterPermanentProvince").val();
+        contactMasterData.permanentWardNo = $("#contactMasterPermanentWardNo").val();
+        contactMasterData.citizenshipIssuedDateAd = $("#contactMasterCitizenshipIssuedDate").val().replace(/-/g, "/");
+        contactMasterData.citizenshipIssuedDistrictId = $("#contactMasterCitizenshipIssuedDistrict").val();
+        contactMasterData.citizenshipNumber = $("#contactMasterCitizenshipNumber").val();
+
+        return JSON.stringify(contactMasterData);
     }
 
-    $(".next-btn").on("click", function() {
-        if (currentStep === 0) {
-            generatePreview();
-        }
-        if (currentStep < steps.length - 1) {
-            showStep(currentStep + 1);
-        }
-    });
 
-    $(".prev-btn").on("click", function() {
-        if (currentStep > 0) {
-            showStep(currentStep - 1);
+    $('#contactMasterPermanentMunicipality').on("change", function () {
+        var referenceId = $(this).val();
+        if (referenceId) {
+            loadDistrictAndProvinceByMunicipality(referenceId, 'contactMasterPermanentDistrict', 'contactMasterPermanentProvince');
         }
     });
-});
-
-
-$('#btnSaveContactMaster').off('click').on('click', function(){
-   var form = $("#contactMasterForm");
-
-   var rules = {
-         contactMasterFirstName: {
-          required: true
-         },
-         contactMasterLastName: {
-          required: true
-         },
-         contactMasterMobileNumber: {
-          required: true
-         },
-         contactMasterPermanentMunicipality: {
-          required: true
-         },
-         contactMasterPermanentDistrict: {
-          required: true
-         },
-         contactMasterPermanentProvince: {
-          required: true
-         },
-         contactMasterCitizenshipIssuedDate: {
-          required: true
-         }
-
-   }
-
-    // if (!validateForm("#contactMasterForm", rules)) {
-    //     return; 
-    // }
-
-    var inputJson = convertToJsonForContactMaster();
-
-
-    openConfirmSaveModal(inputJson, 'contactMasterForm', saveInsertUpdateData, "/master/contact/{{contactId}}/edit", "{% url 'contact-master-list' %}");
-
-})
 
 
 
-function convertToJsonForContactMaster() {
-    let contactMasterData = {};
-    contactMasterData.firstName = $("#contactMasterFirstName").val();
-    contactMasterData.middleName = $("#contactMasterMiddleName").val();
-    contactMasterData.lastName = $("#contactMasterLastName").val();
-    contactMasterData.mobileNumber = $("#contactMasterMobileNumber").val();
-    contactMasterData.contactNumber = $("#contactMasterPhoneNumber").val();
-    contactMasterData.email = $("#contactMasterEmail").val();
-    contactMasterData.permanentMunicipalityId = $("#contactMasterPermanentMunicipality").val();
-    contactMasterData.permanentDistrictId = $("#contactMasterPermanentDistrict").val();
-    contactMasterData.permanentProvinceId = $("#contactMasterPermanentProvince").val();
-    contactMasterData.permanentWardNo = $("#contactMasterPermanentWardNo").val();
-    contactMasterData.citizenshipIssuedDateAd = $("#contactMasterCitizenshipIssuedDate").val().replace(/-/g, "/");
-    contactMasterData.citizenshipIssuedDistrictId = $("#contactMasterCitizenshipIssuedDistrict").val();
-    contactMasterData.citizenshipNumber = $("#contactMasterCitizenshipNumber").val();
+    function formatDateYearSlash(dateStr) {
+        if (!dateStr) return '';
 
-    return JSON.stringify(contactMasterData);
-}
+        var parts = dateStr.split('-'); // ["2024", "03", "02"]
+        if (parts.length !== 3) return dateStr;
+
+        return parts[0] + '/' + parts[1] + '/' + parts[2];
+    }
 
 
-$('#contactMasterPermanentMunicipality').on("change", function(){
-        var districtId = $('option:selected', this).data('parent-id');
-        $('#contactMasterPermanentDistrict option').each(function(){
-            if($(this).data('id') == districtId){
-                $(this).prop('selected', true);
-                $('#contactMasterPermanentDistrict').trigger('change');
-                
-                return false;
-            }
-        });
-    });
 
-    $('#contactMasterPermanentDistrict').on("change", function(){
-        var provinceId = $('option:selected', this).data('parent-id');
-        $('#contactMasterPermanentProvince option').each(function(){
-            if($(this).data('id') == provinceId){
-                $(this).prop('selected', true);
-                $('#contactMasterPermanentProvince').trigger('change');
-                return false;
-            }
-        });
-    });
+    function contactMasterDataById(referenceId) {
 
-      
-
-
-   function contactMasterDataById(referenceId){
-          
-      $.ajax({
-         url : "/master/contact/" + referenceId + "/findById",
-         method: "GET",
-         applicationType: "application/json",
-         success: function(data){
-             var data = data.datas;
-             $("#contactMasterFirstName").val(data.firstName);
-                   $("#contactMasterMiddleName").val(data.middleName);
-                   $("#contactMasterLastName").val(data.lastName);
-                   $("#contactMasterMobileNumber").val(data.mobileNumber);
-                   $("#contactMasterPhoneNumber").val(data.contactNumber);
-                   $("#contactMasterEmail").val(data.email);
-                   $("#contactMasterPermanentMunicipality").val(data.permanentMunicipality).change();
-                   $("#contactMasterPermanentDistrict").val(data.permanentDistrict).change();
-                   $("#contactMasterPermanentProvince").val(data.permanentProvince).change();
-                   $("#contactMasterPermanentWardNo").val(data.permanentWardNo);
-                   $("#contactMasterCitizenshipNumber").val(data.citizenshipNumber);
-                   $("#contactMasterCitizenshipIssuedDistrict").val(data.citizenshipIssuedDistrict).change();
-                   $("#contactMasterCitizenshipIssuedDate").val(data.citizenshipIssuedDateAd);
+        $.ajax({
+            url: "/master/contact/" + referenceId + "/findById",
+            method: "GET",
+            applicationType: "application/json",
+            success: function (data) {
+                var data = data.datas;
+                $("#contactMasterFirstName").val(data.firstName);
+                $("#contactMasterMiddleName").val(data.middleName);
+                $("#contactMasterLastName").val(data.lastName);
+                $("#contactMasterMobileNumber").val(data.mobileNumber);
+                $("#contactMasterPhoneNumber").val(data.contactNumber);
+                $("#contactMasterEmail").val(data.email);
+                $("#contactMasterPermanentMunicipality").val(data.permanentMunicipality).change();
+                $("#contactMasterPermanentDistrict").val(data.permanentDistrict).change();
+                $("#contactMasterPermanentProvince").val(data.permanentProvince).change();
+                $("#contactMasterPermanentWardNo").val(data.permanentWardNo);
+                $("#contactMasterCitizenshipNumber").val(data.citizenshipNumber);
+                $("#contactMasterCitizenshipIssuedDistrict").val(data.citizenshipIssuedDistrict).change();
+                $("#contactMasterCitizenshipIssuedDate").val(formatDateSlash(data.citizenshipIssuedDateAd));
 
             }
-      })
-   }
+        })
+    }
 </script>
 
 {% endblock %}

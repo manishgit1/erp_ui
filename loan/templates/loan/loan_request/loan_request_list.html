@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card shadow-sm rounded-3">
+    <div class="card-body">
+        <h5 class="mb-4">Loan Requests</h5>
+
+        <ul class="nav nav-tabs" id="loanRequestTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="pending-tab" data-toggle="tab" data-target="#pending" type="button"
+                    role="tab">Pending</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="reverted-tab" data-toggle="tab" data-target="#reverted" type="button"
+                    role="tab">Reverted</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rejected-tab" data-toggle="tab" data-target="#rejected" type="button"
+                    role="tab">Rejected</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="approved-tab" data-toggle="tab" data-target="#approved" type="button"
+                    role="tab">Approved</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="disbursed-tab" data-toggle="tab" data-target="#disbursed" type="button"
+                    role="tab">Disbursed</button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3" id="loanRequestTabContent">
+            <!-- Pending -->
+            <div class="tab-pane fade show active" id="pending" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" id="pendingLoanTable">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Client Code</th>
+                                <th>Mobile Number</th>
+                                <th>Loan Amount</th>
+                                <th>Tenure</th>
+                                <th>Interest Rate</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Reverted -->
+            <div class="tab-pane fade" id="reverted" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" id="revertedLoanTable">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Client Code</th>
+                                <th>Mobile Number</th>
+                                <th>Loan Amount</th>
+                                <th>Tenure</th>
+                                <th>Interest Rate</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Rejected -->
+            <div class="tab-pane fade" id="rejected" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" id="rejectedLoanTable">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Client Code</th>
+                                <th>Mobile Number</th>
+                                <th>Loan Amount</th>
+                                <th>Tenure</th>
+                                <th>Interest Rate</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Approved -->
+            <div class="tab-pane fade" id="approved" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" id="approvedLoanTable">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Client Code</th>
+                                <th>Mobile Number</th>
+                                <th>Loan Amount</th>
+                                <th>Tenure</th>
+                                <th>Interest Rate</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Disbursed -->
+            <div class="tab-pane fade" id="disbursed" role="tabpanel">
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered" id="disbursedLoanTable">
+                        <thead>
+                            <tr>
+                                <th>Client Name</th>
+                                <th>Client Code</th>
+                                <th>Mobile Number</th>
+                                <th>Loan Amount</th>
+                                <th>Tenure</th>
+                                <th>Interest Rate</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'modal/loan_timeline_modal.html' %}
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'loan/js/loan_request.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        // Load default tab (Pending)
+        loadLoanRequestList("{% url 'loan-request-pending-lists' %}", "pendingLoanTable");
+
+        // Lazy load on tab click
+        $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            var targetId = $(e.target).attr('data-target');
+            var tableId = targetId.replace('#', '') + 'LoanTable';
+            var url = '';
+
+            if (targetId === '#pending') {
+                url = "{% url 'loan-request-pending-lists' %}";
+            } else if (targetId === '#reverted') {
+                url = "{% url 'loan-request-reverted-lists' %}";
+            } else if (targetId === '#rejected') {
+                url = "{% url 'loan-request-rejected-lists' %}";
+            } else if (targetId === '#approved') {
+                url = "{% url 'loan-request-approved-lists' %}";
+            } else if (targetId === '#disbursed') {
+                // url = "{% url 'loan-request-disbursed-lists' %}"; // Uncomment when view is ready
+            }
+
+            if (url) {
+                loadLoanRequestList(url, tableId);
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Role Setup{% endblock %}
+
+{% block content %}
+<style>
+    .page-header-bar {
+        background: linear-gradient(135deg, #3b0764 0%, #7c3aed 100%);
+        border-radius: 10px;
+        padding: 18px 24px;
+        margin-bottom: 22px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .page-header-bar h4 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .page-header-bar .breadcrumb-text {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 2px;
+    }
+
+    .badge-perm {
+        background: #ede9fe;
+        color: #7c3aed;
+        border-radius: 20px;
+        padding: 3px 10px;
+        font-size: 0.76rem;
+        font-weight: 600;
+    }
+
+    .btn-action {
+        padding: 4px 10px;
+        font-size: 0.78rem;
+        border-radius: 6px;
+    }
+</style>
+
+<div class="page-header-bar">
+    <div>
+        <h4><i class="fas fa-user-shield mr-2"></i> User Role Setup</h4>
+        <div class="breadcrumb-text">Settings &rsaquo; Role Setup</div>
+    </div>
+    <div class="d-flex">
+        <a href="{% url 'settings-menu' %}" class="btn btn-outline-light btn-sm mr-2">
+            <i class="fas fa-arrow-left mr-1"></i> Back
+        </a>
+        <a href="{% url 'role-setup-create' %}" class="btn btn-light btn-sm">
+            <i class="fas fa-plus mr-1"></i> Add New Role
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+            <span class="font-weight-bold text-secondary"
+                style="font-size:0.82rem; text-transform:uppercase; letter-spacing:1px;">
+                All Roles
+            </span>
+            <span class="text-muted" style="font-size:0.82rem;" id="roleCountLabel">Loading...</span>
+        </div>
+        <div class="p-3">
+            <table id="roleSetupTable" class="table table-bordered table-hover table-sm">
+                <thead class="thead-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Role Name</th>
+                        <th>Role Code</th>
+                        <th>Description</th>
+                        <th>Permissions</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block javascript %}
+
+<script>
+    $(document).ready(function () {
+        loadRoleSetupList("{% url 'role-setup-lists' %}");
+    });
+
+    function loadRoleSetupList(requestUrl) {
+        $.ajax({
+            url: requestUrl, method: "GET", dataType: "json",
+            success: function (data) {
+                var tbody = $('#roleSetupTable tbody');
+                tbody.empty();
+                if (data.resultCode !== '0') { showErrorMessageAfterAjaxResponse(data); return; }
+
+                var rows = data.datas || [];
+                $('#roleCountLabel').text(rows.length + ' record(s)');
+
+                rows.forEach(function (item, idx) {
+                    var statusBadge = item.isActive
+                        ? '<span class="badge-active" style="background:#dcfce7;color:#16a34a;border-radius:20px;padding:3px 10px;font-size:0.76rem;font-weight:600;">Active</span>'
+                        : '<span style="background:#fee2e2;color:#dc2626;border-radius:20px;padding:3px 10px;font-size:0.76rem;font-weight:600;">Inactive</span>';
+
+                    var perms = (item.permissions || []).map(function (p) { return `<span class="badge-perm mr-1">${escapeHtml(p)}</span>`; }).join('');
+
+                    var tr = `
+                    <tr>
+                        <td>${idx + 1}</td>
+                        <td><strong>${escapeHtml(item.name || '—')}</strong></td>
+                        <td><code>${escapeHtml(item.roleCode || '—')}</code></td>
+                        <td>${escapeHtml(item.description || '—')}</td>
+                        <td>${perms || '<span class="text-muted">—</span>'}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-info btn-action mr-1"
+                                onclick="showUpdatePage('/role/${item.referenceId}/edit')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                    tbody.append(tr);
+                });
+
+                $('#roleSetupTable').DataTable({
+                    destroy: true,
+                    order: [[0, 'asc']],
+                    language: { search: "_INPUT_", searchPlaceholder: "Search roles..." }
+                });
+            },
+            error: function () { toastrErrorMessage("Failed to load roles."); }
+        });
+    }
+</script>
+{% endblock javascript %}

@@ -111,16 +111,12 @@
 </div>
 
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+{% endblock content %}
 
+{% block javascript %}
 <script>
 
-  $(document).ready(function(){
+  $(document).ready(function () {
     loadContactMasterList("{% url 'contact-master-lists' %}");
   })
   $(function () {
@@ -145,7 +141,6 @@
       dataType: "json",
       contentType: "application/json",
       success: function (data) {
-        console.log(data);
 
         $('#contactMasterTable tbody').empty();
 
@@ -176,29 +171,26 @@
 
 
   function showConfirmModal(url) {
-            var modalElement = document.getElementById('confirmModal');
-            var modal = new bootstrap.Modal(modalElement);
+    var modalElement = document.getElementById('confirmModal');
+    var modal = new bootstrap.Modal(modalElement);
 
-            // Store data on the modal DOM element itself (preferred over jQuery .data for consistency)
-            modalElement._inputJson = inputJson;
-            modalElement._formId = formId;
-            modalElement._callBackFunction = callBackFunction;
-            modalElement._requestUrl = requestUrl;
+    // Store data on the modal DOM element itself (preferred over jQuery .data for consistency)
+    modalElement._inputJson = inputJson;
+    modalElement._formId = formId;
+    modalElement._callBackFunction = callBackFunction;
+    modalElement._requestUrl = requestUrl;
 
-            modal.show();
+    modal.show();
 
-            // Remove previous click handlers and add a fresh one
-            $('#btnYesModal').off('click').on('click', function () {
-          
-                window.location.href = url;
-                modal.hide();
-            });
-        }
+    // Remove previous click handlers and add a fresh one
+    $('#btnYesModal').off('click').on('click', function () {
 
-
-  function showUpdatePage(url){
-    window.location.href = url;
+      window.location.href = url;
+      modal.hide();
+    });
   }
-</script>
 
-{% endblock content %}
+
+
+</script>
+{% endblock javascript %}

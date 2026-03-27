@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 {% include 'master/client_master/client_master.html' %}
@@ -6,30 +7,41 @@
 
 
 {% block javascript %}
+<script src="{% static 'master/js/client_master.js' %}"></script>
 <script>
   $(document).ready(function () {
 
+    ClientMaster.init();
+
     var data = "{{data|escapejs}}";
-    if(data !== '' && data !== null && data !== undefined){
-      loadContactMasterDataForKyc(data)
-    }
+
 
     // $('#clientMasterPermanentMunicipality, #clientMasterCitizenshipIssuedDistrict, #clientMasterPermanentProvince').select2();
-    loadSelectElementData("clientMasterPermanentMunicipality","{% url 'general-settings-lists' %}", "setupType", "vdcMunicipality" );
-    loadSelectElementData("clientMasterCitizenshipIssuedDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
-    loadSelectElementData("clientMasterIdentityIssuedDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
-    loadSelectElementData("clientMasterPermanentDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
-    loadSelectElementData("clientMasterIdentityIssuedDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
-    loadSelectElementData("clientMasterPermanentProvince","{% url 'general-settings-lists' %}", "setupType", "province" );
-    loadSelectElementData("contactMasterCitizenshipIssuedDistrict","{% url 'general-settings-lists' %}", "setupType", "district" );
-    loadSelectElementData("clientMasterGender","{% url 'client-type-lists' %}", "setupType", "gender" );
-    loadSelectElementData("clientMasterSalutation","{% url 'client-type-lists' %}", "setupType", "salutation" );
-    loadSelectElementData("clientMasterNationality","{% url 'client-type-lists' %}", "setupType", "nationality" );
+
+    $.when(
+      loadSelectElementData("clientMasterPermanentMunicipality", "{% url 'general-settings-lists' %}", "setupType", "vdcMunicipality"),
+      loadSelectElementData("clientMasterCitizenshipIssuedDistrict", "{% url 'general-settings-lists' %}", "setupType", "district"),
+      loadSelectElementData("clientMasterPermanentDistrict", "{% url 'general-settings-lists' %}", "setupType", "district"),
+      loadSelectElementData("clientMasterPermanentProvince", "{% url 'general-settings-lists' %}", "setupType", "province"),
+      loadSelectElementData("clientMasterTemporaryMunicipality", "{% url 'general-settings-lists' %}", "setupType", "vdcMunicipality"),
+      loadSelectElementData("clientMasterTemporaryDistrict", "{% url 'general-settings-lists' %}", "setupType", "district"),
+      loadSelectElementData("clientMasterTemporaryProvince", "{% url 'general-settings-lists' %}", "setupType", "province"),
+      loadSelectElementData("clientMasterIdentityIssuedDistrict", "{% url 'general-settings-lists' %}", "setupType", "district"),
+      loadSelectElementData("clientMasterCompanyRegistrationAuthority", "{% url 'client-type-lists' %}", "setupType", "registrationAuthority"),
+      loadSelectElementData("clientMasterGender", "{% url 'client-type-lists' %}", "setupType", "gender"),
+      loadSelectElementData("clientMasterSalutation", "{% url 'client-type-lists' %}", "setupType", "salutation"),
+      loadSelectElementData("clientMasterNationality", "{% url 'client-type-lists' %}", "setupType", "nationality")
+    ).done(function () {
+      if (data !== '' && data !== null && data !== undefined) {
+        loadContactMasterDataForKyc(data)
+      }
+    })
+
 
   });
-  
 
-  $('#clientMasterPermanentMunicipality').on("change", function(){
+
+  $('#clientMasterPermanentMunicipality').on("change", function () {
     var municipalityId = $('#clientMasterPermanentMunicipality').val();
     loadDistrictAndProvinceByMunicipality(municipalityId);
   })
@@ -53,13 +65,13 @@
 
   $('#clientMasterEducation').on("keydown", function (e) {
     if (e.keyCode == 32) {
-      loadGeneralSearchModalData('clientMasterEducation','/tools/clientType/lists','education','Education')
+      loadGeneralSearchModalData('clientMasterEducation', '/tools/clientType/lists', 'education', 'Education')
     }
   });
 
   $('#clientMasterClientNature').on("keydown", function (e) {
     if (e.keyCode == 32) {
-      loadGeneralSearchModalData('clientMasterClientNature', '/tools/clientType/lists','clientNature', 'Client Nature')
+      loadGeneralSearchModalData('clientMasterClientNature', '/tools/clientType/lists', 'clientNature', 'Client Nature')
     }
   });
 
@@ -70,14 +82,23 @@
   });
 
 
-  function loadContactMasterDataForKyc(data){
+  function loadContactMasterDataForKyc(data) {
     var clientData = JSON.parse(data);
     $('#clientMasterFirstName').val(clientData.firstName);
     $('#clientMasterMiddleName').val(clientData.middleName);
     $('#clientMasterLastName').val(clientData.lastName);
     $('#clientMasterCitizenshipNumber').val(clientData.citizenshipNumber);
-    $('#clientMasterContactNumber').val(clientData.mobileNumber);
-    $('#clientMasterPhoneNumber').val(clientData.contactNumber);
+    $('#clientMasterMobileNumber').val(clientData.mobileNumber);
+    $('#clientMasterContactNumber').val(clientData.contactNumber);
+
+    $('#clientMasterPermanentMunicipality').val(clientData.permanentMunicipality).trigger('change');
+    $('#clientMasterCitizenshipIssuedDistrict').val(clientData.citizenshipIssuedDistrict).trigger('change');
+    $('#clientMasterPermanentDistrict').val(clientData.permanentDistrict).trigger('change');
+    $('#clientMasterPermanentProvince').val(clientData.permanentProvince).trigger('change');
+    $('#clientMasterPermanentWardNo').val(clientData.permanentWardNo);
+    // $('#clientMasterGender').val(clientData.gender);
+    // $('#clientMasterSalutation').val(clientData.salutation);
+    // $('#clientMasterNationality').val(clientData.nationality);
     // $('#clientMasterFirstName').val(clientData.firstName);
   }
 </script>

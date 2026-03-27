@@ -92,19 +92,19 @@
          <div class="row">
             <div class="col-md-6 col-sm-12 col-xs-12">
                <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">First Name</label>
+                  <label for="" class="col-md-4 form-label">First Name <span class="text-danger">*</span></label>
                   <div class="col-md-8">
                      <input type="text" class="form-control form-control-sm" id="contactMasterFirstName"
-                        name="contactMasterFirstName">
+                        name="contactMasterFirstName" required>
                   </div>
                </div>
             </div>
             <div class="col-md-6 col-sm-12 col-xs-12">
                <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Per. Municipality</label>
+                  <label for="" class="col-md-4 form-label">Per. Municipality <span class="text-danger">*</span></label>
                   <div class="col-md-8">
                      <select id="contactMasterPermanentMunicipality" name="contactMasterPermanentMunicipality"
-                        class="form-control form-select-sm">
+                        class="form-control form-select-sm" required>
                         <option value="">SELECT</option>
                      </select>
                   </div>
@@ -116,17 +116,17 @@
                <div class="form-group row">
                   <label for="" class="col-md-4 form-label">Middle Name</label>
                   <div class="col-md-8">
-                     <input type="text" class="form-control form-control-sm form-control-sm" id="contactMasterMiddleName"
+                     <input type="text" class="form-control form-control-sm" id="contactMasterMiddleName"
                         name="contactMasterMiddleName">
                   </div>
                </div>
             </div>
             <div class="col-md-6 col-sm-12 col-xs-12">
                <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Per. District</label>
+                  <label for="" class="col-md-4 form-label">Per. District <span class="text-danger">*</span></label>
                   <div class="col-md-8">
                      <select id="contactMasterPermanentDistrict" name="contactMasterPermanentDistrict"
-                        class="form-control form-select-sm">
+                        class="form-control form-select-sm" required>
                         <option value="">SELECT</option>
                      </select>
                   </div>
@@ -137,19 +137,19 @@
          <div class="row">
             <div class="col-md-6 col-sm-12 col-xs-12">
                <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Last Name</label>
+                  <label for="" class="col-md-4 form-label">Last Name <span class="text-danger">*</span></label>
                   <div class="col-md-8">
                      <input type="text" class="form-control form-control-sm" id="contactMasterLastName"
-                        name="contactMasterLastName">
+                        name="contactMasterLastName" required>
                   </div>
                </div>
             </div>
             <div class="col-md-6 col-sm-12 col-xs-12">
                <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Per. Province</label>
+                  <label for="" class="col-md-4 form-label">Per. Province <span class="text-danger">*</span></label>
                   <div class="col-md-8">
                      <select id="contactMasterPermanentProvince" name="contactMasterPermanentProvince"
-                        class="form-control form-select-sm">
+                        class="form-control form-select-sm" required>
                         <option value="">SELECT</option>
                      </select>
                   </div>
@@ -159,20 +159,19 @@
          <div class="row">
             <div class="col-md-6 col-sm-12 col-xs-12">
                <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Mobile Number</label>
+                  <label for="" class="col-md-4 form-label">Mobile Number <span class="text-danger">*</span></label>
                   <div class="col-md-8">
                      <input type="text" class="form-control form-control-sm" id="contactMasterMobileNumber"
-                        name="contactMasterMobileNumber">
+                        name="contactMasterMobileNumber" required maxlength="10">
                   </div>
                </div>
             </div>
             <div class="col-md-6 col-sm-12 col-xs-12">
                <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Per. Ward No.</label>
+                  <label for="" class="col-md-4 form-label">Per. Ward No. <span class="text-danger">*</span></label>
                   <div class="col-md-8">
                      <input type="text" class="form-control form-control-sm" id="contactMasterPermanentWardNo"
-                        name="contactMasterPermanentWardNo">
-                     </select>
+                        name="contactMasterPermanentWardNo" required>
                   </div>
                </div>
             </div>
@@ -198,7 +197,7 @@
                   </div>
                </div>
             </div>
-            
+
          </div>
          <div class="row">
             <div class="col-md-6 col-sm-12 col-xs-12">
@@ -225,15 +224,15 @@
          <div class="row">
             <div class="col-md-6 col-sm-12 col-xs-12">
                <div class="form-group row">
-                  <label for="" class="col-md-4 form-label">Citizenship Issued Date</label>
+                  <label for="" class="col-md-4 form-label">Citizenship Issued Date <span
+                        class="text-danger">*</span></label>
                   <div class="col-md-8">
                      <input type="text" class="form-control form-control-sm" id="contactMasterCitizenshipIssuedDate"
-                        name="contactMasterCitizenshipIssuedDate">
-                     </select>
+                        name="contactMasterCitizenshipIssuedDate" required>
                   </div>
                </div>
             </div>
-            
+
          </div>
          <button type="button" class="btn btn-primary next-btn">Next</button>
       </div>
@@ -241,12 +240,12 @@
       <div class="tab-pane fade">
 
          <div id="customerPreview" class="mb-4 border rounded p-3 bg-light">
-        </div>
-       
+         </div>
+
          <button type="button" class="btn btn-secondary prev-btn">Previous</button>
-         <button type="button" class="btn btn-success" id="btnSaveContactMaster" >Save</button>
+         <button type="button" class="btn btn-success" id="btnSaveContactMaster">Save</button>
       </div>
 
-    
+
    </div>
- </form>
+</form>

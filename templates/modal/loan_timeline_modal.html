@@ -1,0 +1,105 @@
+<!-- Loan Request Timeline Modal -->
+<div class="modal fade" id="loanTimelineModal" tabindex="-1" aria-labelledby="loanTimelineModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="loanTimelineModalTitle"><i class="fas fa-history mr-2"></i>Loan Request
+                    Timeline</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="max-height: 500px; overflow-y: auto;">
+                <div id="loanTimelineContainer">
+                    <!-- Timeline will be dynamically loaded here -->
+                    <div class="text-center p-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styles for the timeline to match AdminLTE appearance */
+    .timeline {
+        margin: 0 0 45px;
+        padding: 0;
+        position: relative;
+    }
+
+    .timeline::before {
+        border-radius: .25rem;
+        background-color: #dee2e6;
+        bottom: 0;
+        content: "";
+        left: 31px;
+        margin: 0;
+        position: absolute;
+        top: 0;
+        width: 4px;
+    }
+
+    .timeline>div {
+        margin-bottom: 15px;
+        margin-right: 10px;
+        position: relative;
+    }
+
+    .timeline>div>.fas,
+    .timeline>div>.fab,
+    .timeline>div>.far,
+    .timeline>div>.fal,
+    .timeline>div>.fad,
+    .timeline>div>.svg-inline--fa,
+    .timeline>div>.ion {
+        background-color: #adb5bd;
+        border-radius: 50%;
+        font-size: 16px;
+        height: 30px;
+        left: 18px;
+        line-height: 30px;
+        position: absolute;
+        text-align: center;
+        top: 0;
+        width: 30px;
+    }
+
+    .timeline>div>.timeline-item {
+        box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+        border-radius: .25rem;
+        background-color: #fff;
+        color: #495057;
+        margin-left: 60px;
+        margin-right: 15px;
+        margin-top: 0;
+        padding: 0;
+        position: relative;
+    }
+
+    .timeline>div>.timeline-item>.time {
+        color: #999;
+        float: right;
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .timeline>div>.timeline-item>.timeline-header {
+        border-bottom: 1px solid rgba(0, 0, 0, .125);
+        color: #495057;
+        font-size: 16px;
+        line-height: 1.1;
+        margin: 0;
+        padding: 10px;
+    }
+
+    .timeline>div>.timeline-item>.timeline-body,
+    .timeline>div>.timeline-item>.timeline-footer {
+        padding: 10px;
+    }
+</style>

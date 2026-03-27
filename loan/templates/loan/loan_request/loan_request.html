@@ -1,0 +1,226 @@
+<form id="loanRequestForm" autocomplete="false">
+    {% csrf_token %}
+
+    <div class="card shadow-sm rounded-3">
+        <div class="card-body">
+            <h5 class="mb-4">Loan Request</h5>
+
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" id="loanRequestTabs" role="tablist">
+                <li class="nav-item">
+                    <a href="#loanDetails" class="nav-link active" role="tab" data-toggle="tab">Loan Details</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#applicantInfo" class="nav-link" role="tab" data-toggle="tab">Applicant Info</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#collateral" class="nav-link" role="tab" data-toggle="tab">Collateral</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#guarantors" class="nav-link" role="tab" data-toggle="tab">Guarantors</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#documents" class="nav-link" role="tab" data-toggle="tab">Documents</a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content pt-3">
+
+                <!-- Loan Details -->
+                <div class="tab-pane fade show active" id="loanDetails">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label for="loanRequestValueDate" class="form-label col-md-4">Value Date (AD)</label>
+                                <input type="date" id="loanRequestValueDate" name="loanRequestValueDate"
+                                    class="form-control form-control-sm col-md-8">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label for="loanRequestAmount" class="form-label col-md-4">Loan Amount</label>
+                                <input type="number" id="loanRequestAmount" name="loanRequestAmount"
+                                    class="form-control form-control-sm col-md-8" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label for="loanRequestTenure" class="form-label col-md-4">Tenure (Months)</label>
+                                <input type="number" id="loanRequestTenure" name="loanRequestTenure"
+                                    class="form-control form-control-sm col-md-8" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label for="loanRequestPurpose" class="form-label col-md-4">Loan Purpose Code</label>
+                                <select name="loanRequestPurpose" id="loanRequestPurpose"
+                                    class="form-control form-control-sm select2 col-md-8">
+                                    <option value="">SELECT</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label for="loanRequestInterestRate" class="form-label col-md-4">Interest Rate
+                                    (%)</label>
+                                <input type="number" step="0.01" id="loanRequestInterestRate"
+                                    name="loanRequestInterestRate" class="form-control form-control-sm col-md-8"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label for="loanRequestType" class="form-label col-md-4">Loan Type</label>
+                                <select name="loanRequestType" id="loanRequestType"
+                                    class="form-control form-control-sm select2 col-md-8">
+                                    <option value="">SELECT</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label for="loanRequestPaymentScheme" class="form-label col-md-4">Payment Scheme</label>
+                                <select name="loanRequestPaymentScheme" id="loanRequestPaymentScheme"
+                                    class="form-control form-control-sm select2 col-md-8">
+                                    <option value="">SELECT</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label for="loanRequestEmiDate" class="form-label col-md-4">EMI Date (AD)</label>
+                                <input type="date" id="loanRequestEmiDate" name="loanRequestEmiDate"
+                                    class="form-control form-control-sm col-md-8">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-end">
+                        <button type="button"
+                            class="btn btn-sm btn-success px-3 mr-2 loan-request-next-btn">Next</button>
+                    </div>
+                </div>
+
+                <!-- Applicant Info (Read-only) -->
+                <div class="tab-pane fade" id="applicantInfo">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label col-md-4">Client Name</label>
+                                <input type="text" id="loanRequestClientName"
+                                    class="form-control form-control-sm col-md-8" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label col-md-4">Client Code</label>
+                                <input type="text" id="loanRequestClientCode"
+                                    class="form-control form-control-sm col-md-8" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label col-md-4">Mobile Number</label>
+                                <input type="text" id="loanRequestClientMobileNumber"
+                                    class="form-control form-control-sm col-md-8" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label col-md-4">Permanent Address</label>
+                                <input type="text" id="loanRequestClientPermanentAddress"
+                                    class="form-control form-control-sm col-md-8" readonly>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label col-md-4">Citizenship Number</label>
+                                <input type="text" id="loanRequestCitizenshipNumber"
+                                    class="form-control form-control-sm col-md-8" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="form-label col-md-4">Temporary Address</label>
+                                <input type="text" id="loanRequestClientTemporaryAddress"
+                                    class="form-control form-control-sm col-md-8" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-end">
+                        <button type="button"
+                            class="btn btn-sm btn-success px-3 mr-2 loan-request-next-btn">Next</button>
+                        <button type="button"
+                            class="btn btn-sm btn-warning px-3 loan-request-prev-btn">Previous</button>
+                    </div>
+                </div>
+
+                <!-- Collateral -->
+                <div class="tab-pane fade" id="collateral">
+                    <div id="collateralList">
+                        <!-- Dynamic Collateral Items -->
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary mb-3" id="btnAddCollateral"><i
+                            class="fas fa-plus"></i> Add Collateral</button>
+
+                    <div class="row justify-content-end">
+                        <button type="button"
+                            class="btn btn-sm btn-success px-3 mr-2 loan-request-next-btn">Next</button>
+                        <button type="button"
+                            class="btn btn-sm btn-warning px-3 loan-request-prev-btn">Previous</button>
+                    </div>
+                </div>
+
+                <!-- Guarantors -->
+                <div class="tab-pane fade" id="guarantors">
+                    <div id="guarantorList">
+                        <!-- Dynamic Guarantor Items -->
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary mb-3" id="btnAddGuarantor"><i
+                            class="fas fa-plus"></i> Add Guarantor</button>
+
+                    <div class="row justify-content-end">
+                        <button type="button"
+                            class="btn btn-sm btn-success px-3 mr-2 loan-request-next-btn">Next</button>
+                        <button type="button"
+                            class="btn btn-sm btn-warning px-3 loan-request-prev-btn">Previous</button>
+                    </div>
+                </div>
+
+                <!-- Documents -->
+                <div class="tab-pane fade" id="documents">
+                    <div class="mb-3">
+                        <label class="form-label">Upload Loan Documents</label>
+                        <input type="file" class="form-control" multiple>
+                    </div>
+
+                    <div class="row justify-content-end">
+                        <button id="btnSaveLoanRequest" type="button"
+                            class="btn btn-sm btn-primary px-3 mr-2">Save</button>
+                        <button type="button"
+                            class="btn btn-sm btn-warning px-3 loan-request-prev-btn">Previous</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>

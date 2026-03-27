@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Workflow Setup{% endblock %}
+
+{% block content %}
+<style>
+    .page-header-bar {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+        border-radius: 10px;
+        padding: 18px 24px;
+        margin-bottom: 22px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .page-header-bar h4 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .page-header-bar .breadcrumb-text {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 2px;
+    }
+
+    .section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #64748b;
+        margin: 20px 0 12px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .required-star {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .workflow-table th {
+        background-color: #f8fafc;
+        font-size: 12px;
+        text-transform: uppercase;
+        color: #64748b;
+    }
+</style>
+
+<div class="page-header-bar">
+    <div>
+        <h4><i class="fas fa-route mr-2"></i> Request Workflow Setup</h4>
+        <div class="breadcrumb-text">Settings &rsaquo; Workflow &rsaquo; Add</div>
+    </div>
+    <div class="d-flex">
+        <a href="{% url 'workflow-setup-list' %}" class="btn btn-outline-light btn-sm mr-2">
+            <i class="fas fa-arrow-left mr-1"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form id="workflowForm">
+            {% csrf_token %}
+            <p class="section-title"><i class="fas fa-info-circle mr-1"></i> Workflow Details</p>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Workflow Name <span class="required-star">*</span></label>
+                        <input type="text" id="workflowName" class="form-control form-control-sm" required
+                            placeholder="e.g. Loan Approval Workflow">
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" id="workflowDescription" class="form-control form-control-sm"
+                            placeholder="Brief description of the workflow">
+                    </div>
+                </div>
+            </div>
+
+            <p class="section-title"><i class="fas fa-plus-circle mr-1"></i> Add Workflow Step</p>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label">From Role <span class="required-star">*</span></label>
+                        <select id="fromRole" class="form-control form-control-sm select2" required>
+                            <option value="">-- Select From Role --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label">To Role <span class="required-star">*</span></label>
+                        <select id="toRole" class="form-control form-control-sm select2" required>
+                            <option value="">-- Select To Role --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="form-label">Remarks</label>
+                        <input type="text" id="workflowStepRemarks" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="col-md-1 d-flex align-items-end mb-3">
+                    <button type="button" class="btn btn-primary btn-sm btn-block" id="btnAddStep">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0" style="font-size: 1rem; font-weight: 600;">Workflow Steps</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 workflow-table" id="workflowTable">
+                <thead>
+                    <tr>
+                        <th width="5%">#</th>
+                        <th width="25%">From Role</th>
+                        <th width="25%">To Role</th>
+                        <th width="20%">Remarks</th>
+                        <th width="10%" class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="emptyRow">
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            <i class="fas fa-info-circle mr-1"></i> No workflow steps added yet.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-white d-flex justify-content-end">
+        <button type="button" class="btn btn-success" id="btnSaveWorkflow">
+            <i class="fas fa-save mr-1"></i> Save Workflow
+        </button>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        // Load roles into dropdowns
+        loadSelectElementData('fromRole', "{% url 'role-setup-lists' %}", '', '');
+        loadSelectElementData('toRole', "{% url 'role-setup-lists' %}", '', '');
+
+        var stepCount = 0;
+
+        $('#btnAddStep').on('click', function () {
+            var fromRoleId = $('#fromRole').val();
+            var fromRoleName = $('#fromRole option:selected').text();
+            var toRoleId = $('#toRole').val();
+            var toRoleName = $('#toRole option:selected').text();
+            var remarks = $('#workflowStepRemarks').val().trim();
+
+            if (!fromRoleId || !toRoleId) {
+                toastrErrorMessage("Please fill all required fields.");
+                return;
+            }
+
+            if (fromRoleId === toRoleId) {
+                toastrErrorMessage("From Role and To Role cannot be the same.");
+                return;
+            }
+
+            // Remove empty row if it exists
+            $('#emptyRow').remove();
+
+            stepCount++;
+            var newRow = `
+                <tr data-from-id="${fromRoleId}" data-to-id="${toRoleId}" data-remarks="${remarks}">
+                    <td>${stepCount}</td>
+                    <td>${fromRoleName}</td>
+                    <td>${toRoleName}</td>
+                    <td>${remarks || '-'}</td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-danger btn-xs btnDeleteRow">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+
+            $('#workflowTable tbody').append(newRow);
+
+            // Reset fields
+            $('#workflowStepRemarks').val('');
+            $('#fromRole').val('').trigger('change');
+            $('#toRole').val('').trigger('change');
+
+            toastrSuccessMessage("Step added to table.");
+        });
+
+        // Delete row
+        $(document).on('click', '.btnDeleteRow', function () {
+            $(this).closest('tr').remove();
+
+            // Show empty row if no rows left
+            if ($('#workflowTable tbody tr').length === 0) {
+                $('#workflowTable tbody').append(`
+                    <tr id="emptyRow">
+                        <td colspan="6" class="text-center py-4 text-muted">
+                            <i class="fas fa-info-circle mr-1"></i> No workflow steps added yet.
+                        </td>
+                    </tr>
+                `);
+                stepCount = 0;
+            } else {
+                // Renumber rows
+                $('#workflowTable tbody tr').each(function (index) {
+                    $(this).find('td:first').text(index + 1);
+                });
+                stepCount = $('#workflowTable tbody tr').length;
+            }
+        });
+
+        // Save Workflow
+        $('#btnSaveWorkflow').on('click', function () {
+            var workflowName = $('#workflowName').val().trim();
+            var workflowDescription = $('#workflowDescription').val().trim();
+
+            if (!workflowName) {
+                toastrErrorMessage("Please enter a Workflow Name.");
+                return;
+            }
+
+            var steps = [];
+            $('#workflowTable tbody tr').not('#emptyRow').each(function () {
+                steps.push({
+                    fromRoleId: $(this).data('from-id'),
+                    toRoleId: $(this).data('to-id'),
+                    remarks: $(this).data('remarks')
+                });
+            });
+
+            if (steps.length === 0) {
+                toastrErrorMessage("Please add at least one workflow step.");
+                return;
+            }
+
+            var payload = {
+                name: workflowName,
+                description: workflowDescription,
+                workflowSteps: steps
+            };
+
+            openConfirmSaveModal(
+                JSON.stringify(payload),
+                'workflowForm',
+                saveInsertUpdateData,
+                "{% url 'workflow-setup-create' %}",
+                "{% url 'workflow-setup-list' %}"
+            );
+        });
+    });
+</script>
+{% endblock javascript %}

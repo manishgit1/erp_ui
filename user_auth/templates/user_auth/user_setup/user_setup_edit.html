@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+<style>
+    .page-header-bar {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+        border-radius: 10px;
+        padding: 18px 24px;
+        margin-bottom: 22px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .page-header-bar h4 {
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .page-header-bar .breadcrumb-text {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 2px;
+    }
+
+    .section-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #64748b;
+        margin: 20px 0 12px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .required-star {
+        color: #dc2626;
+        margin-left: 2px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+    }
+</style>
+
+<div class="page-header-bar">
+    <div>
+        <h4><i class="fas fa-user-edit mr-2"></i> Edit User</h4>
+        <div class="breadcrumb-text">Settings &rsaquo; User Setup &rsaquo; Edit</div>
+    </div>
+    <a href="{% url 'user-setup-list' %}" class="btn btn-outline-light btn-sm">
+        <i class="fas fa-arrow-left mr-1"></i> Back to List
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form id="userEditForm">
+            {% csrf_token %}
+            <input type="hidden" id="userId" name="referenceId" value="{{ user_id }}">
+
+            <p class="section-title"><i class="fas fa-id-card mr-1"></i> Personal Information</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">First Name <span class="required-star">*</span></label>
+                        <input type="text" id="userFirstName" name="firstName" class="form-control form-control-sm"
+                            required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Middle Name</label>
+                        <input type="text" id="userMiddleName" name="middleName" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Last Name <span class="required-star">*</span></label>
+                        <input type="text" id="userLastName" name="lastName" class="form-control form-control-sm"
+                            required>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Email Address <span class="required-star">*</span></label>
+                        <input type="email" id="userEmail" name="email" class="form-control form-control-sm" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" id="userPhone" name="phone" class="form-control form-control-sm">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <input type="text" id="userDepartment" name="department" class="form-control form-control-sm">
+                    </div>
+                </div>
+            </div>
+
+            <p class="section-title"><i class="fas fa-lock mr-1"></i> Reset Password (leave blank to keep current)</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="userPassword" name="password" class="form-control form-control-sm"
+                            placeholder="Leave blank to keep current">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" id="userConfirmPassword" name="confirmPassword"
+                            class="form-control form-control-sm" placeholder="Leave blank to keep current">
+                    </div>
+                </div>
+            </div>
+
+            <p class="section-title"><i class="fas fa-user-tag mr-1"></i> Role & Status</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Assign Role <span class="required-star">*</span></label>
+                        <select id="userRole" name="roleId" class="form-control form-control-sm" required>
+                            <option value="">-- Select Role --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="userStatus" name="isActive" class="form-control form-control-sm">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Remarks</label>
+                <textarea id="userRemarks" name="remarks" class="form-control form-control-sm" rows="2"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+                <a href="{% url 'user-setup-list' %}" class="btn btn-secondary btn-sm mr-2">Cancel</a>
+                <button type="button" class="btn btn-warning btn-sm" id="btnUpdateUser">
+                    <i class="fas fa-save mr-1"></i> Update User
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var userId = $('#userId').val();
+        // loadRolesDropdown("{% url 'role-setup-lists' %}", function () {
+        //     loadUserData("/user/" + userId + "/findById");
+        // });
+
+
+        $.when(
+            loadSelectElementData('userRole', "{% url 'role-setup-lists' %}", '', '')
+        ).done(function () {
+            loadUserData("/user/" + userId + "/findById");
+        })
+    });
+
+    function loadRolesDropdown(url, callback) {
+        $.ajax({
+            url: url, method: "GET", dataType: "json",
+            success: function (data) {
+                if (data.resultCode === '0') {
+                    (data.datas || []).forEach(function (r) {
+                        $('#userRole').append(`<option value="${r.referenceId}">${escapeHtml(r.roleName)}</option>`);
+                    });
+                }
+                if (typeof callback === 'function') callback();
+            }
+        });
+    }
+
+    function loadUserData(url) {
+        $.ajax({
+            url: url, method: "GET", dataType: "json",
+            success: function (data) {
+                if (data.resultCode === '0') {
+                    var u = data.datas;
+                    $('#userFirstName').val(u.firstName || '');
+                    $('#userMiddleName').val(u.middleName || '');
+                    $('#userLastName').val(u.lastName || '');
+                    $('#userEmail').val(u.email || '');
+                    $('#userPhone').val(u.phone || '');
+                    $('#userDepartment').val(u.department || '');
+                    $('#userRole').val(u.roleId || '');
+                    $('#userStatus').val(u.isActive ? 'true' : 'false');
+                    $('#userRemarks').val(u.remarks || '');
+                } else {
+                    showErrorMessageAfterAjaxResponse(data);
+                }
+            }
+        });
+    }
+
+    $('#btnUpdateUser').on('click', function () {
+        var pwd = $('#userPassword').val();
+        var cpwd = $('#userConfirmPassword').val();
+        if (pwd && pwd !== cpwd) {
+            toastrErrorMessage("Passwords do not match.");
+            return;
+        }
+        var payload = {
+            referenceId: $('#userId').val(),
+            firstName: $('#userFirstName').val().trim(),
+            middleName: $('#userMiddleName').val().trim(),
+            lastName: $('#userLastName').val().trim(),
+            email: $('#userEmail').val().trim(),
+            phone: $('#userPhone').val().trim(),
+            department: $('#userDepartment').val().trim(),
+            roleId: $('#userRole').val(),
+            isActive: $('#userStatus').val() === 'true',
+            remarks: $('#userRemarks').val().trim()
+        };
+        if (pwd) payload.password = pwd;
+
+        openConfirmSaveModal(
+            JSON.stringify(payload),
+            'userEditForm',
+            saveInsertUpdateData,
+            "/user/" + $('#userId').val() + "/edit",
+            "{% url 'user-setup-list' %}"
+        );
+    });
+</script>
+{% endblock content %}
