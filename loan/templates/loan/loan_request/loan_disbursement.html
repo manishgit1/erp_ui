@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h4 class="mb-4">Loan Disbursement</h4>
+    </div>
+</div>
+{% include 'loan/loan_request/loan_request.html' %}
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'loan/js/loan_request.js' %}"></script>
+<script>
+    const LOAN_REQUEST_LIST_URL = "{% url 'loan-request-list' %}";
+
+    $(document).ready(function () {
+        var data = "{{data|escapejs}}";
+
+        $.when(
+            loadSelectElementData("loanRequestType", "{% url 'loan-type-lists' %}", "setupType", "loanType"),
+            loadSelectElementData("loanRequestPurpose", "{% url 'client-type-lists' %}", "setupType", "loanPurposeCode"),
+            loadSelectElementData("loanRequestPaymentScheme", "{% url 'client-type-lists' %}", "setupType", "loanPaymentScheme")
+        ).done(function () {
+            if (data !== '' && data !== null && data !== undefined) {
+                try {
+                    var parsedData = JSON.parse(data);
+                    if (parsedData.referenceId) {
+                        loadLoanRequestDataById(parsedData.referenceId);
+                    }
+                } catch (e) {
+                    console.error("Error parsing jsonData:", e);
+                }
+            }
+        });
+
+        // Override the default Save button behavior
+        $('#btnSaveLoanRequest').off('click').on('click', function () {
+            try {
+                var parsedData = JSON.parse(data);
+                var referenceId = parsedData.referenceId;
+
+                // Get pre-filled or updated data for the modal display
+                var clientName = $('#loanRequestClientName').val();
+                var address = $('#loanRequestClientPermanentAddress').val();
+                var amount = $('#loanRequestAmount').val();
+                var interestRate = $('#loanRequestInterestRate').val();
+
+                // Set values in the modal
+                $('#modalClientName').text(clientName || '-');
+                $('#modalClientAddress').text(address || '-');
+                $('#modalLoanAmount').text(formatCurrency(amount || 0));
+                $('#modalInterestRate').text((interestRate || '0') + '%');
+
+                $('#loanActionModalTitle').text("Disburse Loan Request");
+                $('#btnLoanActionSubmit').removeClass('btn-success btn-danger btn-secondary').addClass('btn-primary').text("Disburse");
+                $('#remarksRequiredLabel').addClass('d-none');
+                $('#loanActionRemarks').val('');
+
+                $('#loanActionModal').modal('show');
+
+                $('#btnLoanActionSubmit').off('click').on('click', function () {
+                    var remarks = $('#loanActionRemarks').val().trim();
+                    disburseLoanRequest(referenceId, remarks);
+                    $('#loanActionModal').modal('hide');
+                });
+
+            } catch (e) {
+                console.error("Error initiating disbursement modal:", e);
+                toastrErrorMessage("An error occurred. Missing sequence ID.");
+            }
+        });
+    });
+
+    function loadLoanRequestDataById(referenceId) {
+        var jsonData = {
+            'referenceId': referenceId
+        };
+        $.ajax({
+            url: "/loan/loanRequest/" + referenceId + "/findById",
+            method: "GET",
+            dataType: "json",
+            contentType: "application/json",
+            success: function (response) {
+                data = response.datas;
+                if (data != null && data != undefined) {
+                    $('#loanRequestClientName').val(data.clientName);
+                    $('#loanRequestClientCode').val(data.clientCode);
+                    $('#loanRequestClientMobileNumber').val(data.mobileNumber);
+                    $('#loanRequestCitizenshipNumber').val(data.citizenshipNumber);
+                    $('#loanRequestTenure').val(data.tenureMonths);
+                    $('#loanRequestInterestRate').val(data.interestRate);
+                    $('#loanRequestAmount').val(data.loanAmount);
+                    $('#loanRequestType').val(data.loanType).trigger('change');
+                    $('#loanRequestClientPermanentAddress').val(data.clientPermanentAddress);
+                    $('#loanRequestClientTemporaryAddress').val(data.clientTemporaryAddress);
+                    $('#loanRequestPurpose').val(data.loanPurpose).trigger('change');
+                    $('#loanRequestPaymentScheme').val(data.paymentScheme).trigger('change');
+                    $('#loanRequestEmiDate').val(data.emiDateAd);
+
+                    // Render document thumbnails if any
+                    if (data.documentImages && data.documentImages.length > 0) {
+                        var container = $('#documentThumbnailContainer');
+                        container.empty();
+                        data.documentImages.forEach(function (doc, index) {
+                            var imgHtml = `
+                                <div class="col-md-3 mb-3">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="card-body p-2 text-center">
+                                            <img src="${doc.imageValue}" class="img-fluid rounded border" 
+                                                 style="max-height: 150px; cursor: pointer;" 
+                                                 onclick="window.open('${doc.imageValue}', '_blank')"
+                                                 alt="Document ${index + 1}">
+                                            <div class="mt-2 text-muted small">Document ${index + 1}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            container.append(imgHtml);
+                        });
+                    }
+                }
+            },
+            error: function (jqXHR, textStatus, errorMessage) {
+                console.error('Error loading loan data:', errorMessage);
+                toastrErrorMessage("Failed to load loan data.");
+            }
+        });
+    }
+</script>
+{% endblock %}

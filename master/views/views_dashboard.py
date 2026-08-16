@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic import View
 
 # Create your views here.
 
@@ -13,3 +14,27 @@ def dashboard(request):
         # {"name": "Payments", "url": "/payments/", "icon": "fas fa-credit-card", "description": "Track payments"},
       ]  
   return render(request, 'base.html', {'menuItems': menu_items})
+
+
+class DashboardMetricsView(View):
+    def get(self, request, *args, **kwargs):
+        try:
+            from master.globalparamters import get_auth_headers
+            import requests
+            from django.conf import settings
+            from django.http import JsonResponse
+
+            headers = get_auth_headers(request)
+            api_url = settings.API_URL + '/master/dashboard/metrics/'
+
+            response = requests.get(api_url, headers=headers, timeout=30)
+            
+            if response.status_code == 200:
+                return JsonResponse(response.json(), status=200)
+            else:
+                return JsonResponse(response.json() if "application/json" in response.headers.get("Content-Type", "") else {"message": response.text}, status=response.status_code)
+
+        except requests.exceptions.Timeout:
+            return JsonResponse({"status": "error", "message": "API request timed out."}, status=504)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)

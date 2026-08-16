@@ -55,6 +55,28 @@
                 $('#loanRequestType').val(response.loanType);
                 $('#loanRequestClientPermanentAddress').val(response.clientPermanentAddress);
                 $('#loanRequestClientTemporaryAddress').val(response.clientTemporaryAddress);
+
+                // Render document images
+                if (response.documentImages && response.documentImages.length > 0) {
+                    var container = $('#documentThumbnailContainer');
+                    container.empty();
+                    response.documentImages.forEach(function (doc, index) {
+                        var imgHtml = `
+                            <div class="col-md-3 mb-3">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body p-2 text-center">
+                                        <img src="${doc.imageValue}" class="img-fluid rounded border" 
+                                             style="max-height: 150px; cursor: pointer;" 
+                                             onclick="window.open('${doc.imageValue}', '_blank')"
+                                             alt="Document ${index + 1}">
+                                        <div class="mt-2 text-muted small">Document ${index + 1}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        container.append(imgHtml);
+                    });
+                }
             },
             error: function (jqXHR, textStatus, errorMessage) {
                 console.error('Error loading client master data:', errorMessage);

@@ -78,6 +78,20 @@ class LoanRequestListJsonView(View):
          logger.error(str(e), exc_info=True)
          return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
+
+
+class LoanRequestDataByIdView(View):
+   def get(self,request,pk,format=None):
+      api_url = API_URL + '/loan/loanRequest/' + str(pk) + '/findById'
+      headers = get_auth_headers(request)
+      response = requests.get(api_url, headers=headers)
+      if response.status_code == 200:
+         return JsonResponse(response.json(), status=200)
+      else:
+         return JsonResponse(response.json(), status=500)
+
+
+
 class PendingLoansDataView(View):
     def get(self, request, *args, **kwargs):
       try:
@@ -162,3 +176,11 @@ class LoanRequestTimelineDataView(View):
         except Exception as e:
             logger.error(str(e), exc_info=True)
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+class LoanRequestDisburseView(View):
+    def get(self, request, *args, **kwargs):
+        data = request.GET.get('jsonData')
+        context = {
+            'data': data
+        }
+        return render(request, 'loan/loan_request/loan_disbursement.html', context)

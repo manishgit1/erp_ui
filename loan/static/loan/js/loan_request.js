@@ -231,7 +231,11 @@ function loadLoanRequestList(requestUrl, tableId) {
                                     <button type="button" class="btn btn-xs btn-outline-primary" onclick="viewLoanRequest('${refId}')" title="View"><i class="fas fa-eye"></i></button>
                                     
                                     ${(item.canApprove || item.isApprovable) ? `
-                                        <button type="button" class="btn btn-xs btn-success" onclick="openLoanActionModal(${index}, '${tableId}', 'APPROVE')" title="${approveButtonText}">${approveButtonText}</button>
+                                        ${approveButtonText === 'Disburse' ? `
+                                            <button type="button" class="btn btn-xs btn-success" onclick="openDisbursementPage('${refId}')" title="${approveButtonText}">${approveButtonText}</button>
+                                        ` : `
+                                            <button type="button" class="btn btn-xs btn-success" onclick="openLoanActionModal(${index}, '${tableId}', 'APPROVE')" title="${approveButtonText}">${approveButtonText}</button>
+                                        `}
                                         <button type="button" class="btn btn-xs btn-danger" onclick="openLoanActionModal(${index}, '${tableId}', 'REJECT')" title="Reject">Reject</button>
                                     ` : ''}
 
@@ -510,6 +514,32 @@ function revertLoanRequest(referenceId, remarks) {
     ajaxPostRequest('/loan/loanRequest/revert', payload, function (response) {
         toastrSuccessMessage("Loan request reverted.");
         location.reload();
+    });
+}
+
+function openDisbursementPage(referenceId) {
+    var jsonData = {
+        'referenceId': referenceId
+    };
+    window.location.href = '/loan/loanRequest/disburse?jsonData=' + encodeURIComponent(JSON.stringify(jsonData));
+}
+
+function disburseLoanRequest(referenceId, remarks) {
+    var payload = {
+        loanRequestId: referenceId,
+        approvalStatus: 'DISBURSED',
+        remarks: remarks
+    };
+
+    ajaxPostRequest('/loan/loanRequest/approve', payload, function (response) {
+        if (response.resultCode === '0') {
+            toastrSuccessMessage("Loan request disbursed successfully.");
+            setTimeout(function () {
+                window.location.href = LOAN_REQUEST_LIST_URL;
+            }, 1000);
+        } else {
+            toastrErrorMessage(response.resultDescription || "Disbursement failed.");
+        }
     });
 }
 

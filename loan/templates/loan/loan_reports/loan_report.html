@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Loan Reports{% endblock %}
+
+{% block page_header %}
+<div class="row mb-2">
+    <div class="col-sm-6">
+        <h1 class="m-0">Loan Reports</h1>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Filters</h3>
+    </div>
+    <div class="card-body">
+        <form id="loanReportFilterForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="fromDate">From Date</label>
+                        <input type="date" class="form-control form-control-sm" id="fromDate" name="from_date">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="toDate">To Date</label>
+                        <input type="date" class="form-control form-control-sm" id="toDate" name="to_date">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="clientName">Client Name</label>
+                        <input type="text" class="form-control form-control-sm" id="clientName" name="name"
+                            placeholder="Enter name">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="loanType">Loan Type</label>
+                        <select class="form-control form-control-sm select2" id="loanType" name="loan_type">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="paymentScheme">Payment Scheme</label>
+                        <select class="form-control form-control-sm select2" id="paymentScheme" name="payment_scheme">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="loanStatus">Status</label>
+                        <select class="form-control form-control-sm select2" id="loanStatus" name="status">
+                            <option value="">All</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="APPROVED">Approved</option>
+                            <option value="REJECTED">Rejected</option>
+                            <option value="DISBURSED">Disbursed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right" style="margin-top: 30px;">
+                    <button type="button" class="btn btn-primary btn-sm" id="btnViewReport">
+                        <i class="fas fa-search"></i> View
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm" id="btnResetFilters">
+                        <i class="fas fa-sync"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card mt-3">
+    <div class="card-body">
+        <table id="loanReportTable" class="table table-bordered table-striped table-hover table-sm">
+            <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Loan Type</th>
+                    <th>Amount</th>
+                    <th>Tenure (M)</th>
+                    <th>Interest Rate (%)</th>
+                    <th>Value Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be loaded via AJAX -->
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        // Initialize Select2
+        $('.select2').select2({
+            width: '100%'
+        });
+
+        // Load Dropdowns
+        $.when(
+            loadSelectElementData("loanType", "{% url 'loan-type-lists' %}", "setupType", "loanType"),
+            loadSelectElementData("paymentScheme", "{% url 'client-type-lists' %}", "setupType", "loanPaymentScheme")
+        ).done(function () {
+            console.log("Dropdowns loaded");
+        });
+
+        // Initialize DataTable (empty initial)
+        let reportTable = makeDataTable('loanReportTable', [], [
+            { data: 'client_name', title: 'Client Name' },
+            { data: 'loan_type_name', title: 'Loan Type' },
+            { data: 'amount', title: 'Amount', render: function (data) { return formatCurrency(data); } },
+            { data: 'tenure_months', title: 'Tenure (M)' },
+            { data: 'interest_rate', title: 'Interest Rate (%)' },
+            { data: 'value_date_ad', title: 'Value Date' },
+            {
+                data: 'status', title: 'Status', render: function (data) {
+                    let badgeClass = 'badge-secondary';
+                    if (data === 'APPROVED') badgeClass = 'badge-success';
+                    else if (data === 'PENDING') badgeClass = 'badge-warning';
+                    else if (data === 'REJECTED') badgeClass = 'badge-danger';
+                    else if (data === 'DISBURSED') badgeClass = 'badge-info';
+                    return `<span class="badge ${badgeClass}">${data}</span>`;
+                }
+            }
+        ]);
+
+        $('#btnViewReport').on('click', function () {
+            loadReportData();
+        });
+
+        $('#btnResetFilters').on('click', function () {
+            $('#loanReportFilterForm')[0].reset();
+            $('.select2').trigger('change');
+            // Re-initialize with empty data or re-fetch all
+            loadReportData();
+        });
+
+        function loadReportData() {
+            let formData = {};
+            $('#loanReportFilterForm').serializeArray().forEach(function (item) {
+                if (item.value) {
+                    formData[item.name] = item.value;
+                }
+            });
+
+            const requestUrl = "{% url 'loan-report-lists' %}";
+
+            $.ajax({
+                url: requestUrl + "?jsonData=" + encodeURIComponent(JSON.stringify(formData)),
+                method: "GET",
+                dataType: "json",
+                success: function (response) {
+                    if (response.resultCode === '0') {
+                        // Transform data for DataTable if needed
+                        let tableData = response.datas.map(item => ({
+                            client_name: item.client_name,
+                            loan_type_name: item.loan_type_name,
+                            amount: item.amount,
+                            tenure_months: item.tenure_months,
+                            interest_rate: item.interest_rate,
+                            value_date_ad: item.value_date_ad,
+                            status: item.status
+                        }));
+
+                        makeDataTable('loanReportTable', tableData, [
+                            { data: 'client_name', title: 'Client Name' },
+                            { data: 'loan_type_name', title: 'Loan Type' },
+                            { data: 'amount', title: 'Amount' },
+                            { data: 'tenure_months', title: 'Tenure (M)' },
+                            { data: 'interest_rate', title: 'Interest Rate (%)' },
+                            { data: 'value_date_ad', title: 'Value Date' },
+                            { data: 'status', title: 'Status' }
+                        ], [
+                            {
+                                targets: 'Amount',
+                                render: function (data) { return formatCurrency(data); }
+                            },
+                            {
+                                targets: 'Status',
+                                render: function (data) {
+                                    let badgeClass = 'badge-secondary';
+                                    if (data === 'APPROVED') badgeClass = 'badge-success';
+                                    else if (data === 'PENDING') badgeClass = 'badge-warning';
+                                    else if (data === 'REJECTED') badgeClass = 'badge-danger';
+                                    else if (data === 'DISBURSED') badgeClass = 'badge-info';
+                                    return `<span class="badge ${badgeClass}">${data}</span>`;
+                                }
+                            }
+                        ]);
+                    } else {
+                        toastrErrorMessage(response.resultDescription || "Failed to load report data");
+                    }
+                },
+                error: function () {
+                    toastrErrorMessage("An error occurred while fetching report data");
+                }
+            });
+        }
+
+        // Initial load
+        loadReportData();
+    });
+</script>
+{% endblock %}

@@ -23,6 +23,7 @@ urlpatterns = [
      path('contact/checkIfContactExists/', views.CheckIfContactExistsView.as_view(), name='check-if-contact-exists'),
 
      path('getAddressInfo/', views.GetAddressByMunicipalityView.as_view(), name='get-address-by-municipality'),
+     path('dashboard/metrics/', views.DashboardMetricsView.as_view(), name='dashboard-metrics'),
 
 
 ]
