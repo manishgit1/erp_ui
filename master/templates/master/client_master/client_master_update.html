@@ -54,16 +54,6 @@
         loadDistrictAndProvinceByMunicipality(municipalityId, 'clientMasterTemporaryDistrict', 'clientMasterTemporaryProvince');
     });
 
-    // Helper for cascading load (if not already global) -- Assuming loadDistrictAndProvinceByMunicipality exists globally or adapting
-    function loadDistrictAndProvinceByMunicipality(municipalityId, districtIdInfo, provinceIdInfo) {
-        // Implementation depends on global helper, but usually:
-        // $.ajax(...) and then set values. 
-        // Reuse existing if available. 
-        // If the original create page had it, we should ensure consistency. 
-        // The create page had `loadDistrictAndProvinceByMunicipality(municipalityId)` which seemed to hardcode IDs.
-        // We might need to make it more flexible or duplicate logic if it's too rigid.
-    }
-
 
     function clientMasterDataById(clientId) {
         $.ajax({

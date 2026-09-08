@@ -43,7 +43,12 @@
 
   $('#clientMasterPermanentMunicipality').on("change", function () {
     var municipalityId = $('#clientMasterPermanentMunicipality').val();
-    loadDistrictAndProvinceByMunicipality(municipalityId);
+    loadDistrictAndProvinceByMunicipality(municipalityId, 'clientMasterPermanentDistrict', 'clientMasterPermanentProvince');
+  })
+
+  $('#clientMasterTemporaryMunicipality').on("change", function () {
+    var municipalityId = $('#clientMasterTemporaryMunicipality').val();
+    loadDistrictAndProvinceByMunicipality(municipalityId, 'clientMasterTemporaryDistrict', 'clientMasterTemporaryProvince');
   })
 
   function nextStep(step) {

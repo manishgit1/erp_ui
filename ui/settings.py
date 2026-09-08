@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -132,6 +132,31 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+
+
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]  # If using a "static" folder inside your project
+
+
+MEDIA_URL = '/media/'  # URL prefix to access media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory where uploaded images are stored
+
+# from .urls import urlpatterns
+
+# # Add this for development mode only
+# if DEBUG:
+#     from django.conf.urls.static import static
+#     urlpatterns += static(MEDIA_URL, document_root=MEDIA_ROOT)
+
+
+
+API_BASE_URL = os.getenv('API_BASE_URL', 'http://127.0.0.1:8000')
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# SESSION_COOKIE_AGE = 0  
+SESSION_SAVE_EVERY_REQUEST = True 
+
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -168,7 +193,7 @@ LOGGING = {
     },
 }
 
-API_URL = "http://127.0.0.1:8099"  
+API_URL = os.getenv('API_URL', API_BASE_URL)
 
 # Authentication Whitellist
 LOGIN_EXEMPT_URLS = [

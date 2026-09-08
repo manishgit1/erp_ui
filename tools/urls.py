@@ -8,6 +8,7 @@ urlpatterns = [
    path('leadSource/create',views.LeadSourceCreateView.as_view(), name='lead-source-create'),
    path('leadSource/list', views.LeadSourceListView.as_view(), name='lead-source-list'),
    path('leadSource/lists', views.LeadSourceListDataView.as_view(), name='lead-source-lists'),
+   path('loanCollateralType/lists', views.LoanCollateralTypeListDataView.as_view(), name='loan-collateral-type-lists'),
    path('tools/list', views.ToolsListView.as_view(), name='tools-template-view'),
 
    path('clientType/list', views.ClientTypeListView.as_view(), name='client-type-list'),

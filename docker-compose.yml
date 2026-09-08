@@ -1,0 +1,19 @@
+services:
+  web:
+    build: .
+    volumes:
+      - .:/app:cached
+    env_file:
+      - .env
+    ports:
+      - "8009:8000"
+    environment:
+      - DEBUG=1
+      - DEBUG=1
+    command: sh -c "chmod +x /app/entrypoint.sh && /app/entrypoint.sh"
+    networks:
+      - erp_api_default
+
+networks:
+  erp_api_default:
+    external: true

@@ -21,6 +21,9 @@
                     <a href="#applicantInfo" class="nav-link" role="tab" data-toggle="tab">Applicant Info</a>
                 </li>
                 <li class="nav-item">
+                    <a href="#incomeExpenses" class="nav-link" role="tab" data-toggle="tab">Income/Expenses</a>
+                </li>
+                <li class="nav-item">
                     <a href="#collateral" class="nav-link" role="tab" data-toggle="tab">Collateral</a>
                 </li>
                 <li class="nav-item">
@@ -180,13 +183,203 @@
                     </div>
                 </div>
 
+                <!-- Income / Expenses -->
+                <div class="tab-pane fade" id="incomeExpenses">
+
+                    <h6 class="mb-2">Income</h6>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Income Source</label>
+                                        <select class="form-control form-select-sm" id="incomeSourceInput">
+                                            <option value="">SELECT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Frequency</label>
+                                        <select class="form-control form-select-sm" id="incomeFrequencyInput">
+                                            <option value="">SELECT</option>
+                                            <option value="Monthly">Monthly</option>
+                                            <option value="Quarterly">Quarterly</option>
+                                            <option value="Half-Yearly">Half-Yearly</option>
+                                            <option value="Yearly">Yearly</option>
+                                            <option value="One-Time">One-Time</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Amount</label>
+                                        <input type="number" class="form-control form-control-sm"
+                                            id="incomeAmountInput">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-end">
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-sm btn-primary" id="btnAddIncome"><i
+                                            class="fas fa-plus"></i> Add Income</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive mb-2">
+                        <table class="table table-bordered table-sm" id="incomeTable">
+                            <thead>
+                                <tr>
+                                    <th>Income Source</th>
+                                    <th>Frequency</th>
+                                    <th>Amount</th>
+                                    <th width="60">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="incomeTableBody">
+                                <!-- Added income rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row justify-content-end mb-4">
+                        <div class="col-auto">
+                            <strong>Total Income: Rs. <span id="totalIncomeAmount">0</span></strong>
+                        </div>
+                    </div>
+
+                    <h6 class="mb-2">Expenses</h6>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Expense Type</label>
+                                        <select class="form-control form-select-sm" id="expenseTypeInput">
+                                            <option value="">SELECT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Frequency</label>
+                                        <select class="form-control form-select-sm" id="expenseFrequencyInput">
+                                            <option value="">SELECT</option>
+                                            <option value="Monthly">Monthly</option>
+                                            <option value="Quarterly">Quarterly</option>
+                                            <option value="Half-Yearly">Half-Yearly</option>
+                                            <option value="Yearly">Yearly</option>
+                                            <option value="One-Time">One-Time</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Amount</label>
+                                        <input type="number" class="form-control form-control-sm"
+                                            id="expenseAmountInput">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-end">
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-sm btn-primary" id="btnAddExpense"><i
+                                            class="fas fa-plus"></i> Add Expense</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive mb-2">
+                        <table class="table table-bordered table-sm" id="expenseTable">
+                            <thead>
+                                <tr>
+                                    <th>Expense Type</th>
+                                    <th>Frequency</th>
+                                    <th>Amount</th>
+                                    <th width="60">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenseTableBody">
+                                <!-- Added expense rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row justify-content-end mb-3">
+                        <div class="col-auto">
+                            <strong>Total Expenses: Rs. <span id="totalExpenseAmount">0</span></strong>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-end">
+                        <button type="button"
+                            class="btn btn-sm btn-success px-3 mr-2 loan-request-next-btn">Next</button>
+                        <button type="button"
+                            class="btn btn-sm btn-warning px-3 loan-request-prev-btn">Previous</button>
+                    </div>
+                </div>
+
                 <!-- Collateral -->
                 <div class="tab-pane fade" id="collateral">
-                    <div id="collateralList">
-                        <!-- Dynamic Collateral Items -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Collateral Type</label>
+                                        <select class="form-control form-select-sm" id="collateralTypeInput">
+                                            <option value="">SELECT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Collateral Amount</label>
+                                        <input type="number" class="form-control form-control-sm"
+                                            id="collateralAmountInput">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Valuation Date</label>
+                                        <input type="date" class="form-control form-control-sm"
+                                            id="collateralValuationDateInput">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Valuation Amount</label>
+                                        <input type="number" class="form-control form-control-sm"
+                                            id="collateralValuationAmountInput">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row justify-content-end">
+                                <div class="col-auto">
+                                    <button type="button" class="btn btn-sm btn-primary" id="btnAddCollateral"><i
+                                            class="fas fa-plus"></i> Add</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-sm btn-primary mb-3" id="btnAddCollateral"><i
-                            class="fas fa-plus"></i> Add Collateral</button>
+
+                    <div class="table-responsive mb-3">
+                        <table class="table table-bordered table-sm" id="collateralTable">
+                            <thead>
+                                <tr>
+                                    <th>Collateral Type</th>
+                                    <th>Collateral Amount</th>
+                                    <th>Valuation Date</th>
+                                    <th>Valuation Amount</th>
+                                    <th width="60">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="collateralTableBody">
+                                <!-- Added collateral rows -->
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div class="row justify-content-end">
                         <button type="button"

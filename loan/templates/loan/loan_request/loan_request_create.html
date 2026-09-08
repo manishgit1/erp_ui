@@ -11,6 +11,7 @@
 <script>
     const LOAN_REQUEST_CREATE_URL = "{% url 'loan-request-create' %}";
     const LOAN_REQUEST_LIST_URL = "{% url 'loan-request-list' %}";
+    const LOAN_COLLATERAL_TYPE_LISTS_URL = "{% url 'loan-collateral-type-lists' %}";
 
     $(document).ready(function () {
 
@@ -19,7 +20,9 @@
         $.when(
             loadSelectElementData("loanRequestType", "{% url 'loan-type-lists' %}", "setupType", "loanType"),
             loadSelectElementData("loanRequestPurpose", "{% url 'client-type-lists' %}", "setupType", "loanPurposeCode"),
-            loadSelectElementData("loanRequestPaymentScheme", "{% url 'client-type-lists' %}", "setupType", "loanPaymentScheme")
+            loadSelectElementData("loanRequestPaymentScheme", "{% url 'client-type-lists' %}", "setupType", "loanPaymentScheme"),
+            loadSelectElementData("incomeSourceInput", "{% url 'client-type-lists' %}", "setupType", "incomeSource"),
+            loadSelectElementData("expenseTypeInput", "{% url 'client-type-lists' %}", "setupType", "expenseType")
         ).done(function () {
             if (data !== '' && data !== null && data !== undefined) {
                 loadLoanRequestData(data)

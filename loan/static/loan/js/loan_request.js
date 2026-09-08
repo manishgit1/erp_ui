@@ -1,5 +1,8 @@
 
 var loanRequestsList = [];
+var collateralItems = [];
+var incomeItems = [];
+var expenseItems = [];
 
 $(document).ready(function () {
     handleNavigation();
@@ -46,33 +49,11 @@ function validateTab(tab) {
 }
 
 function initDynamicSections() {
+    // Income / Expenses
+    initIncomeExpenseSection();
+
     // Collateral
-    $('#btnAddCollateral').on('click', function () {
-        var uniqueId = Date.now();
-        var html = `
-            <div class="card mb-3 collateral-item" id="collateral_${uniqueId}">
-                <div class="card-body">
-                    <h6 class="card-title">Collateral Item</h6>
-                    <button type="button" class="close float-right remove-section" data-target="#collateral_${uniqueId}">&times;</button>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Collateral Type</label>
-                                <input type="text" class="form-control form-control-sm" name="collateralType[]">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Valuation Amount</label>
-                                <input type="number" class="form-control form-control-sm" name="collateralValue[]">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        $('#collateralList').append(html);
-    });
+    initCollateralSection();
 
     // Guarantors
     $('#btnAddGuarantor').on('click', function () {
@@ -145,7 +126,196 @@ function initDynamicSections() {
     })
 }
 
+function initIncomeExpenseSection() {
+    $('#btnAddIncome').on('click', function () {
+        var $incomeSource = $('#incomeSourceInput');
+        var incomeSource = $incomeSource.val();
+        var incomeSourceName = $incomeSource.find('option:selected').text();
+        var frequency = $('#incomeFrequencyInput').val();
+        var amount = $('#incomeAmountInput').val();
 
+        if (!incomeSource || !frequency || !amount) {
+            toastrErrorMessage('Please fill in all income fields before adding.');
+            return;
+        }
+
+        incomeItems.push({
+            incomeSource: incomeSource,
+            incomeSourceName: incomeSourceName,
+            frequency: frequency,
+            amount: amount
+        });
+
+        renderIncomeTable();
+
+        $incomeSource.val('');
+        $('#incomeFrequencyInput').val('');
+        $('#incomeAmountInput').val('');
+    });
+
+    $('#incomeTableBody').on('click', '.remove-income-row', function () {
+        var index = $(this).data('index');
+        incomeItems.splice(index, 1);
+        renderIncomeTable();
+    });
+
+    $('#btnAddExpense').on('click', function () {
+        var $expenseType = $('#expenseTypeInput');
+        var expenseType = $expenseType.val();
+        var expenseTypeName = $expenseType.find('option:selected').text();
+        var frequency = $('#expenseFrequencyInput').val();
+        var amount = $('#expenseAmountInput').val();
+
+        if (!expenseType || !frequency || !amount) {
+            toastrErrorMessage('Please fill in all expense fields before adding.');
+            return;
+        }
+
+        expenseItems.push({
+            expenseType: expenseType,
+            expenseTypeName: expenseTypeName,
+            frequency: frequency,
+            amount: amount
+        });
+
+        renderExpenseTable();
+
+        $expenseType.val('');
+        $('#expenseFrequencyInput').val('');
+        $('#expenseAmountInput').val('');
+    });
+
+    $('#expenseTableBody').on('click', '.remove-expense-row', function () {
+        var index = $(this).data('index');
+        expenseItems.splice(index, 1);
+        renderExpenseTable();
+    });
+}
+
+function renderIncomeTable() {
+    var $body = $('#incomeTableBody');
+    $body.empty();
+    var total = 0;
+
+    incomeItems.forEach(function (item, index) {
+        total += parseFloat(item.amount) || 0;
+        var row = `
+            <tr>
+                <td>${item.incomeSourceName}</td>
+                <td>${item.frequency}</td>
+                <td>${item.amount}</td>
+                <td class="text-center">
+                    <button type="button" class="close remove-income-row" data-index="${index}">&times;</button>
+                </td>
+            </tr>
+        `;
+        $body.append(row);
+    });
+
+    $('#totalIncomeAmount').text(formatCurrency(total));
+}
+
+function renderExpenseTable() {
+    var $body = $('#expenseTableBody');
+    $body.empty();
+    var total = 0;
+
+    expenseItems.forEach(function (item, index) {
+        total += parseFloat(item.amount) || 0;
+        var row = `
+            <tr>
+                <td>${item.expenseTypeName}</td>
+                <td>${item.frequency}</td>
+                <td>${item.amount}</td>
+                <td class="text-center">
+                    <button type="button" class="close remove-expense-row" data-index="${index}">&times;</button>
+                </td>
+            </tr>
+        `;
+        $body.append(row);
+    });
+
+    $('#totalExpenseAmount').text(formatCurrency(total));
+}
+
+function getIncomeData() {
+    return incomeItems.map(function (item) {
+        return {
+            incomeSource: item.incomeSource,
+            frequency: item.frequency,
+            amount: item.amount
+        };
+    });
+}
+
+function getExpenseData() {
+    return expenseItems.map(function (item) {
+        return {
+            expenseType: item.expenseType,
+            frequency: item.frequency,
+            amount: item.amount
+        };
+    });
+}
+
+function initCollateralSection() {
+    loadSelectElementData('collateralTypeInput', LOAN_COLLATERAL_TYPE_LISTS_URL, "", "");
+
+    $('#btnAddCollateral').on('click', function () {
+        var $collateralType = $('#collateralTypeInput');
+        var collateralType = $collateralType.val();
+        var collateralTypeName = $collateralType.find('option:selected').text();
+        var collateralAmount = $('#collateralAmountInput').val();
+        var valuationDate = $('#collateralValuationDateInput').val();
+        var valuationAmount = $('#collateralValuationAmountInput').val();
+
+        if (!collateralType || !collateralAmount || !valuationDate || !valuationAmount) {
+            toastrErrorMessage('Please fill in all collateral fields before adding.');
+            return;
+        }
+
+        collateralItems.push({
+            collateralType: collateralType,
+            collateralTypeName: collateralTypeName,
+            collateralAmount: collateralAmount,
+            valuationDate: valuationDate,
+            valuationAmount: valuationAmount
+        });
+
+        renderCollateralTable();
+
+        $collateralType.val('');
+        $('#collateralAmountInput').val('');
+        $('#collateralValuationDateInput').val('');
+        $('#collateralValuationAmountInput').val('');
+    });
+
+    $('#collateralTableBody').on('click', '.remove-collateral-row', function () {
+        var index = $(this).data('index');
+        collateralItems.splice(index, 1);
+        renderCollateralTable();
+    });
+}
+
+function renderCollateralTable() {
+    var $body = $('#collateralTableBody');
+    $body.empty();
+
+    collateralItems.forEach(function (item, index) {
+        var row = `
+            <tr>
+                <td>${item.collateralTypeName}</td>
+                <td>${item.collateralAmount}</td>
+                <td>${item.valuationDate}</td>
+                <td>${item.valuationAmount}</td>
+                <td class="text-center">
+                    <button type="button" class="close remove-collateral-row" data-index="${index}">&times;</button>
+                </td>
+            </tr>
+        `;
+        $body.append(row);
+    });
+}
 
 function convertToJsonForLoanRequest() {
     var loanRequestData = {};
@@ -162,19 +332,21 @@ function convertToJsonForLoanRequest() {
 
     loanRequestData.collateral = getCollateralData();
     loanRequestData.guarantors = getGuarantorData();
+    loanRequestData.income = getIncomeData();
+    loanRequestData.expenses = getExpenseData();
 
     return loanRequestData;
 }
 
 function getCollateralData() {
-    var collateralData = [];
-    $('.collateral-item').each(function () {
-        var item = {};
-        item.collateralType = $(this).find('input[name="collateralType[]"]').val();
-        item.collateralValue = $(this).find('input[name="collateralValue[]"]').val();
-        collateralData.push(item);
+    return collateralItems.map(function (item) {
+        return {
+            collateralType: item.collateralType,
+            collateralAmount: item.collateralAmount,
+            valuationDate: item.valuationDate,
+            valuationAmount: item.valuationAmount
+        };
     });
-    return collateralData;
 }
 
 function getGuarantorData() {
